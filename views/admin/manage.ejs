@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Manage Courses, Quizzes, and Assignments</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Manage Courses, Quizzes, and Assignments</h1>
+  </header>
+  <main>
+    <section>
+      <h2>Courses</h2>
+      <ul>
+        <% courses.forEach(course => { %>
+          <li>
+            <h3><%= course.title %></h3>
+            <p><%= course.description %></p>
+            <a href="/admin/courses/<%= course._id %>/edit">Edit</a>
+          </li>
+        <% }) %>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Quizzes</h2>
+      <ul>
+        <% quizzes.forEach(quiz => { %>
+          <li>
+            <h3><%= quiz.title %></h3>
+            <p><%= quiz.description %></p>
+            <a href="/admin/quizzes/<%= quiz._id %>/edit">Edit</a>
+          </li>
+        <% }) %>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Assignments</h2>
+      <ul>
+        <% assignments.forEach(assignment => { %>
+          <li>
+            <h3><%= assignment.title %></h3>
+            <p><%= assignment.description %></p>
+            <a href="/admin/assignments/<%= assignment._id %>/edit">Edit</a>
+          </li>
+        <% }) %>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

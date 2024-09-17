@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Courses</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Courses</h1>
+  </header>
+  <main>
+    <ul>
+      <% courses.forEach(course => { %>
+        <li>
+          <h2><%= course.title %></h2>
+          <p><%= course.description %></p>
+          <a href="/student/courses/enroll/<%= course._id %>">Enroll</a>
+        </li>
+      <% }) %>
+    </ul>
+  </main>
+</body>
+</html>

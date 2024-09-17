@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Assignments</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Assignments</h1>
+  </header>
+  <main>
+    <ul>
+      <% assignments.forEach(assignment => { %>
+        <li>
+          <h2><%= assignment.title %></h2>
+          <p><%= assignment.description %></p>
+          <a href="/student/assignments/<%= assignment._id %>">View Details</a>
+        </li>
+      <% }) %>
+    </ul>
+  </main>
+</body>
+</html>

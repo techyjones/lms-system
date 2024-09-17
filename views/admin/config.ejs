@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>System Configuration</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>System Configuration</h1>
+  </header>
+  <main>
+    <form action="/admin/config" method="post">
+      <label for="setting1">Setting 1:</label>
+      <input type="text" id="setting1" name="setting1" value="<%= config.setting1 %>">
+      <label for="setting2">Setting 2:</label>
+      <input type="text" id="setting2" name="setting2" value="<%= config.setting2 %>">
+      <button type="submit">Save Changes</button>
+    </form>
+  </main>
+</body>
+</html>

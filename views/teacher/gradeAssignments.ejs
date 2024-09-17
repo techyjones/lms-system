@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Grade Assignments</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Grade Assignments</h1>
+  </header>
+  <main>
+    <ul>
+      <% assignments.forEach(assignment => { %>
+        <li>
+          <h2><%= assignment.title %></h2>
+          <form action="/teacher/assignments/<%= assignment._id %>/grade" method="post">
+            <label for="grade">Grade:</label>
+            <input type="number" id="grade" name="grade" min="0" max="100" required>
+            <button type="submit">Submit Grade</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  </main>
+</body>
+</html>

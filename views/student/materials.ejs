@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Educational Materials</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Educational Materials</h1>
+    </header>
+
+    <ul>
+      <% files.forEach(file => { %>
+        <li>
+          <p><%= file.originalName %> (<%= (file.size / 1024).toFixed(2) %> KB)</p>
+          <a href="/uploads/<%= file.category %>/<%= file.filename %>" download>Download</a>
+        </li>
+      <% }) %>
+    </ul>
+  </main>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Course</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* Basic CSS styles for improved layout */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    main {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #555;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.8rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Style for potential flash messages */
+    .flash-message {
+      color: red;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Create New Course</h1>
+    </header>
+    
+    <!-- Flash message section (if applicable) -->
+    <% if (error_msg) { %>
+      <div class="flash-message"><%= error_msg %></div>
+    <% } %>
+    <% if (success_msg) { %>
+      <div class="flash-message" style="color:green;"><%= success_msg %></div>
+    <% } %>
+
+    <form action="/teacher/courses" method="post">
+      <label for="title">Course Title:</label>
+      <input type="text" id="title" name="title" placeholder="Enter course title" required>
+
+      <label for="description">Description:</label>
+      <textarea id="description" name="description" rows="4" placeholder="Enter course description" required></textarea>
+
+      <button type="submit">Create Course</button>
+    </form>
+  </main>
+</body>
+</html>

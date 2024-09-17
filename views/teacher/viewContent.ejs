@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Uploaded Content</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 10px 20px;
+      text-align: center;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #333;
+      color: #fff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    .flash-message {
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      background-color: #e0e0e0;
+    }
+
+    .flash-message.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .flash-message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .actions a {
+      margin-right: 10px;
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .actions a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Uploaded Content</h1>
+  </header>
+  <main>
+    <!-- Flash messages -->
+    <% if (messages && messages.error) { %>
+      <div class="flash-message error"><%= messages.error %></div>
+    <% } %>
+    <% if (messages && messages.success) { %>
+      <div class="flash-message success"><%= messages.success %></div>
+    <% } %>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>File Type</th>
+          <th>Uploaded By</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% files.forEach(file => { %>
+          <tr>
+            <td><%= file.originalName %></td>
+            <td><%= file.description || 'N/A' %></td>
+            <td><%= file.mimetype %></td>
+            <td><%= file.uploadedBy %></td>
+            <td class="actions">
+              <a href="/uploads/<%= file.category %>/<%= file.filename %>" download>Download</a>
+              <!-- Add additional actions like Edit or Delete here if needed -->
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </main>
+</body>
+</html>

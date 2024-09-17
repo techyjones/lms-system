@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Teacher Dashboard</title>
+  <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #container {
+      display: flex;
+      height: 100vh;
+    }
+
+    #sidebar {
+      width: 250px;
+      background-color: #333;
+      color: white;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #sidebar h2 {
+      margin-top: 0;
+    }
+
+    #sidebar nav ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #sidebar nav ul li {
+      margin: 15px 0;
+    }
+
+    #sidebar nav ul li a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    #sidebar nav ul li a:hover {
+      background-color: #575757;
+    }
+
+    #content {
+      flex: 1;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    #content h1 {
+      margin-top: 0;
+    }
+
+    #content p {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="sidebar">
+      <h2>Teacher Dashboard</h2>
+      <nav>
+        <ul>
+          <li><a href="/teacher/courses">View Courses</a></li>
+          <li><a href="/teacher/createCourse">Create Course</a></li>
+          <li><a href="/teacher/quizzes">Create Quizzes</a></li>
+          <li><a href="/teacher/assignments">Manage Assignments</a></li>
+          <li><a href="/teacher/gradeAssignments">Grade Assignments</a></li>
+          <li><a href="/teacher/upload">Upload Educational Content</a></li>
+          <li><a href="/teacher/viewContent">View Uploaded Content</a></li>
+
+        </ul>
+      </nav>
+    </div>
+
+    <div id="content">
+      <h1>Welcome to the Teacher Dashboard</h1>
+      <p>Here you can manage your courses, create new quizzes, handle assignments, and grade submissions.</p>
+
+      <!-- Add more content here as needed -->
+      <div>
+        <h2>Your Courses</h2>
+        <p>List of courses will be displayed here.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
