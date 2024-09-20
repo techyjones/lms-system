@@ -1,7 +1,7 @@
 const Course = require('../models/Course');
 const Quiz = require('../models/Quiz');
 const Assignment = require('../models/Assignment');
-const File = require('../models/fileModel'); // Include the File model for file handling
+const File = require('../models/fileModel'); 
 const User = require('../models/User'); 
 // Dashboard
 exports.dashboard = (req, res) => {
@@ -10,7 +10,7 @@ exports.dashboard = (req, res) => {
 
 // Render the Create Course form
 exports.renderCreateCourseForm = (req, res) => {
-  res.render('teacher/createCourse'); // Render the createCourse.ejs template
+  res.render('teacher/createCourse'); 
 };
 
 // Create Course
