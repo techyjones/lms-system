@@ -1,7 +1,7 @@
 const Course = require('../models/Course');
 const Assignment = require('../models/Assignment');
-const File = require('../models/fileModel'); // Import the file model
-const User = require('../models/User');// Import the User model
+const File = require('../models/fileModel'); 
+const User = require('../models/User');
 
 // Dashboard
 exports.dashboard = (req, res) => {

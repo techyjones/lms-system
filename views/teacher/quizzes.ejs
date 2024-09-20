@@ -87,6 +87,13 @@
       background-color: #2567b8;
     }
 
+    .question-block {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+
     /* Mobile-friendly adjustments */
     @media (max-width: 600px) {
       main {
@@ -113,16 +120,53 @@
       <label for="title">Quiz Title:</label>
       <input type="text" id="title" name="title" placeholder="Enter quiz title" required>
 
-      <label for="questions">Questions (one per line):</label>
-      <textarea id="questions" name="questions" placeholder="Enter your quiz questions here" required></textarea>
+      <label for="courseId">Course ID:</label>
+      <input type="text" id="courseId" name="courseId" placeholder="Enter course ID" required>
 
-      <label for="duration">Duration (in minutes):</label>
-      <input type="number" id="duration" name="duration" placeholder="Enter duration in minutes" required min="1">
+      <div id="questions-container">
+        <div class="question-block">
+          <label>Question 1:</label>
+          <input type="text" name="questions[]" placeholder="Enter question" required>
+          
+          <label>Options:</label>
+          <input type="text" name="options[0][]" placeholder="Option 1" required>
+          <input type="text" name="options[0][]" placeholder="Option 2" required>
+          <input type="text" name="options[0][]" placeholder="Option 3" required>
+          <input type="text" name="options[0][]" placeholder="Option 4" required>
 
+          <label>Correct Answer:</label>
+          <input type="text" name="answers[]" placeholder="Enter correct answer" required>
+        </div>
+      </div>
+
+      <button type="button" onclick="addQuestion()">Add Another Question</button>
       <button type="submit">Create Quiz</button>
     </form>
   </main>
+
+  <script>
+    let questionIndex = 1;
+
+    function addQuestion() {
+      const container = document.getElementById('questions-container');
+      const newBlock = document.createElement('div');
+      newBlock.className = 'question-block';
+      newBlock.innerHTML = `
+        <label>Question ${questionIndex + 1}:</label>
+        <input type="text" name="questions[]" placeholder="Enter question" required>
+        
+        <label>Options:</label>
+        <input type="text" name="options[${questionIndex}][]" placeholder="Option 1" required>
+        <input type="text" name="options[${questionIndex}][]" placeholder="Option 2" required>
+        <input type="text" name="options[${questionIndex}][]" placeholder="Option 3" required>
+        <input type="text" name="options[${questionIndex}][]" placeholder="Option 4" required>
+
+        <label>Correct Answer:</label>
+        <input type="text" name="answers[]" placeholder="Enter correct answer" required>
+      `;
+      container.appendChild(newBlock);
+      questionIndex++;
+    }
+  </script>
 </body>
 </html>
-
-

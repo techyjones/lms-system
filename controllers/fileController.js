@@ -3,7 +3,7 @@ const multer = require('multer');
 const File = require('../models/fileModel');
 const fs = require('fs');
 
-// Configure multer for file uploads
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let uploadPath = 'public/uploads/';

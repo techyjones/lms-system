@@ -29,10 +29,30 @@ exports.viewCourses = async (req, res) => {
 
 // Create Quiz
 exports.createQuizPost = async (req, res) => {
-  const { title, courseId, questions } = req.body;
-  const newQuiz = new Quiz({ title, course: courseId, questions });
-  await newQuiz.save();
-  res.redirect('/teacher/quizzes');
+  const { title, courseId, questions, options, answers } = req.body;
+
+ 
+  const questionsArray = questions.map((question, index) => ({
+    question,
+    options: options[index], 
+    answer: answers[index] 
+  }));
+
+  try {
+    const newQuiz = new Quiz({
+      title,
+      course: courseId,
+      questions: questionsArray 
+    });
+
+    await newQuiz.save();
+    req.flash('success', 'Quiz created successfully.');
+    res.redirect('/teacher/quizzes');
+  } catch (error) {
+    console.error('Error creating quiz:', error);
+    req.flash('error', 'Failed to create quiz.');
+    res.redirect('/teacher/createQuiz');
+  }
 };
 
 // View Quizzes
@@ -41,6 +61,53 @@ exports.viewQuizzes = async (req, res) => {
   const quizzes = await Quiz.find({ course: { $in: courses.map(c => c._id) } });
   res.render('teacher/quizzes', { quizzes });
 };
+// Render Edit Quiz Form
+exports.renderEditQuizForm = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const quiz = await Quiz.findById(id).populate('course'); // Populate course details if needed
+    if (!quiz) {
+      req.flash('error', 'Quiz not found.');
+      return res.redirect('/teacher/quizzes');
+    }
+    res.render('teacher/editQuiz', { quiz });
+  } catch (error) {
+    req.flash('error', 'Failed to load quiz for editing.');
+    res.redirect('/teacher/quizzes');
+  }
+};
+
+// Update Quiz
+exports.updateQuizPost = async (req, res) => {
+  const { id } = req.params;
+  const { title, questions } = req.body; // Adjust according to your form structure
+  try {
+    const updatedQuiz = await Quiz.findByIdAndUpdate(id, { title, questions }, { new: true });
+    if (!updatedQuiz) {
+      req.flash('error', 'Quiz not found.');
+      return res.redirect('/teacher/quizzes');
+    }
+    req.flash('success', 'Quiz updated successfully.');
+    res.redirect('/teacher/quizzes');
+  } catch (error) {
+    req.flash('error', 'Failed to update quiz.');
+    res.redirect('/teacher/quizzes');
+  }
+};
+
+// Delete Quiz
+exports.deleteQuizPost = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await Quiz.findByIdAndDelete(id);
+    req.flash('success', 'Quiz deleted successfully.');
+    res.redirect('/teacher/quizzes');
+  } catch (error) {
+    req.flash('error', 'Failed to delete quiz.');
+    res.redirect('/teacher/quizzes');
+  }
+};
+
 
 // Manage Assignments
 exports.createAssignmentPost = async (req, res) => {
@@ -87,6 +154,48 @@ exports.viewEnrolledStudents = async (req, res) => {
     res.redirect('/teacher/courses');
   }
 };
+
+//render edit form
+exports.renderEditCourseForm = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const course = await Course.findById(id);
+    if (!course) {
+      req.flash('error', 'Course not found.');
+      return res.redirect('/teacher/courses');
+    }
+    res.render('teacher/editCourse', { course });
+  } catch (error) {
+    req.flash('error', 'Failed to load course.');
+    res.redirect('/teacher/courses');
+  }
+};
+//update the course
+exports.updateCourse = async (req, res) => {
+  const { id } = req.params;
+  const { title, description } = req.body;
+  try {
+    await Course.findByIdAndUpdate(id, { title, description });
+    req.flash('success', 'Course updated successfully.');
+    res.redirect('/teacher/courses');
+  } catch (error) {
+    req.flash('error', 'Failed to update course.');
+    res.redirect('/teacher/courses');
+  }
+};
+//for deleteing course
+exports.deleteCourse = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await Course.findByIdAndDelete(id);
+    req.flash('success', 'Course deleted successfully.');
+    res.redirect('/teacher/courses');
+  } catch (error) {
+    req.flash('error', 'Failed to delete course.');
+    res.redirect('/teacher/courses');
+  }
+};
+
 
 // File Upload - Render upload form
 exports.renderUploadForm = (req, res) => {
