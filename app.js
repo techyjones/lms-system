@@ -9,10 +9,10 @@ const path = require('path');
 const { swaggerRouter, swaggerSetup } = require('./swagger');
 
 
-// Connect to MongoDB
+
 mongoose.connect('mongodb://localhost/shanai-lms', { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Middleware
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(session({
@@ -32,7 +32,7 @@ app.use((req, res, next) => {
     next();
   });
 
-// Set view engine
+
 app.set('view engine', 'ejs');
 
 // Routes
@@ -54,7 +54,7 @@ app.use('/teacher', fileRoutes);
 app.use('/student', fileRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
-// Start server
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

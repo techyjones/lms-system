@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// File upload handling
+
 exports.uploadFile = async (req, res) => {
   const { category } = req.body;
   const file = req.file;
@@ -45,7 +45,7 @@ exports.uploadFile = async (req, res) => {
   res.redirect('/teacher/upload');
 };
 
-// Retrieve files for a specific category
+// Retrieve files (particualr categ)
 exports.getFiles = async (req, res) => {
   const { category } = req.params;
   const files = await File.find({ category });

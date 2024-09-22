@@ -23,18 +23,18 @@ router.get('/', (req, res) => {
   res.render('admin/dashboard');
 });
 
-// User Management
+
 router.get('/users', async (req, res) => {
   const users = await User.find({});
   res.render('admin/users', { users });
 });
 
-// System Configuration (example)
+
 router.get('/config', (req, res) => {
   res.render('admin/config');
 });
 
-// Manage Courses, Quizzes, and Assignments
+
 router.get('/manage', async (req, res) => {
   const courses = await Course.find({});
   const quizzes = await Quiz.find({});

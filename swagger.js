@@ -12,13 +12,13 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:3000', // Adjust the URL based on your server
+        url: 'http://localhost:3000', 
         description: 'Development server',
       },
     ],
   },
-  // Path to the API specs
-  apis: ['./routes/*.js'], // Adjust the path based on where your API routes are located
+  
+  apis: ['./routes/*.js'],
 };
 
 // Initialize Swagger docs
@@ -28,7 +28,7 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 const swaggerSetup = swaggerUi.setup(swaggerDocs);
 const swaggerRouter = swaggerUi.serve;
 
-// Export Swagger setup for use in your app
+
 module.exports = {
   swaggerRouter,
   swaggerSetup,

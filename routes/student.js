@@ -7,7 +7,7 @@ const User = require('../models/User');
 const studentController = require('../controllers/studentController');
 const fileController = require('../controllers/fileController');
 
-// Middleware to check if user is a student
+
 router.use((req, res, next) => {
   if (req.session.user && req.session.user.role === 'student') {
     next();
@@ -19,19 +19,28 @@ router.use((req, res, next) => {
 // Student Dashboard
 router.get('/', studentController.dashboard);
 
-// View Courses
+
 router.get('/courses', studentController.viewCourses);
 
-// Enroll in Course
+
 router.get('/courses/enroll/:id', studentController.enrollCourse);
 
-// View Assignments
+router.get('/quizzes', studentController.viewAvailableQuizzes);
+router.post('/quizzes/:id/enroll', studentController.enrollInQuiz);
+
+
 router.get('/assignments', studentController.viewAssignments);
 
-// View Grades
+
 router.get('/grades', studentController.viewGrades);
 
-// Route to view uploaded materials
+// Route for viewing uploaded materials
 router.get('/materials', studentController.viewMaterials);
+
+
+// Notification and Reply Routes
+router.get('/notifications', studentController.viewNotifications);
+router.post('/notifications/:id/reply', studentController.replyNotification);
+
 
 module.exports = router;

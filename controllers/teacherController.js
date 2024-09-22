@@ -3,17 +3,21 @@ const Quiz = require('../models/Quiz');
 const Assignment = require('../models/Assignment');
 const File = require('../models/fileModel'); 
 const User = require('../models/User'); 
+const Notification = require('../models/notification');
+
+
 // Dashboard
 exports.dashboard = (req, res) => {
   res.render('teacher/dashboard');
 };
 
-// Render the Create Course form
+
+
 exports.renderCreateCourseForm = (req, res) => {
   res.render('teacher/createCourse'); 
 };
 
-// Create Course
+
 exports.createCoursePost = async (req, res) => {
   const { title, description } = req.body;
   const newCourse = new Course({ title, description, teacher: req.session.user._id });
@@ -21,95 +25,101 @@ exports.createCoursePost = async (req, res) => {
   res.redirect('/teacher/courses');
 };
 
-// View Courses
+
 exports.viewCourses = async (req, res) => {
   const courses = await Course.find({ teacher: req.session.user._id });
   res.render('teacher/courses', { courses });
 };
 
-// Create Quiz
-exports.createQuizPost = async (req, res) => {
-  const { title, courseId, questions, options, answers } = req.body;
 
- 
-  const questionsArray = questions.map((question, index) => ({
-    question,
-    options: options[index], 
-    answer: answers[index] 
-  }));
-
+// Create Quiz (GET form)
+exports.renderCreateQuizForm = async (req, res) => {
   try {
-    const newQuiz = new Quiz({
-      title,
-      course: courseId,
-      questions: questionsArray 
-    });
-
-    await newQuiz.save();
-    req.flash('success', 'Quiz created successfully.');
-    res.redirect('/teacher/quizzes');
+    const courses = await Course.find(); // Fetch all courses
+    console.log(courses); // Log the courses to see if they're fetched correctly
+    res.render('teacher/createQuiz', { courses }); // Pass courses to the view
   } catch (error) {
-    console.error('Error creating quiz:', error);
-    req.flash('error', 'Failed to create quiz.');
-    res.redirect('/teacher/createQuiz');
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+// Create Quiz (POST)
+exports.createQuizPost = async (req, res) => {
+  try {
+    const { title, courseId, questions, options, answers } = req.body;
+
+    const quizData = {
+      title,
+      courseId,
+      questions: questions.map((question, index) => ({
+        questionText: question,
+        options: options[index],
+        correctAnswer: answers[index]
+      }))
+    };
+
+    const quiz = new Quiz(quizData);
+    await quiz.save();
+    res.redirect('/teacher/quizzes');
+  } catch (err) {
+    res.status(500).send('Server Error');
   }
 };
 
 // View Quizzes
 exports.viewQuizzes = async (req, res) => {
-  const courses = await Course.find({ teacher: req.session.user._id });
-  const quizzes = await Quiz.find({ course: { $in: courses.map(c => c._id) } });
-  res.render('teacher/quizzes', { quizzes });
+  try {
+    const quizzes = await Quiz.find().populate('courseId', 'name'); // Populate with course name
+    res.render('teacher/quizzes', { quizzes });
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
 };
+
 // Render Edit Quiz Form
 exports.renderEditQuizForm = async (req, res) => {
-  const { id } = req.params;
   try {
-    const quiz = await Quiz.findById(id).populate('course'); // Populate course details if needed
-    if (!quiz) {
-      req.flash('error', 'Quiz not found.');
-      return res.redirect('/teacher/quizzes');
-    }
-    res.render('teacher/editQuiz', { quiz });
-  } catch (error) {
-    req.flash('error', 'Failed to load quiz for editing.');
-    res.redirect('/teacher/quizzes');
+    const quiz = await Quiz.findById(req.params.id);
+    const courses = await Course.find();
+    res.render('teacher/editQuiz', { quiz, courses });
+  } catch (err) {
+    res.status(500).send('Server Error');
   }
 };
 
 // Update Quiz
 exports.updateQuizPost = async (req, res) => {
-  const { id } = req.params;
-  const { title, questions } = req.body; // Adjust according to your form structure
   try {
-    const updatedQuiz = await Quiz.findByIdAndUpdate(id, { title, questions }, { new: true });
-    if (!updatedQuiz) {
-      req.flash('error', 'Quiz not found.');
-      return res.redirect('/teacher/quizzes');
-    }
-    req.flash('success', 'Quiz updated successfully.');
+    const { title, courseId, questions, options, answers } = req.body;
+    const updatedQuiz = {
+      title,
+      courseId,
+      questions: questions.map((question, index) => ({
+        questionText: question,
+        options: options[index],
+        correctAnswer: answers[index]
+      }))
+    };
+
+    await Quiz.findByIdAndUpdate(req.params.id, updatedQuiz);
     res.redirect('/teacher/quizzes');
-  } catch (error) {
-    req.flash('error', 'Failed to update quiz.');
-    res.redirect('/teacher/quizzes');
+  } catch (err) {
+    res.status(500).send('Server Error');
   }
 };
 
 // Delete Quiz
 exports.deleteQuizPost = async (req, res) => {
-  const { id } = req.params;
   try {
-    await Quiz.findByIdAndDelete(id);
-    req.flash('success', 'Quiz deleted successfully.');
+    await Quiz.findByIdAndDelete(req.params.id);
     res.redirect('/teacher/quizzes');
-  } catch (error) {
-    req.flash('error', 'Failed to delete quiz.');
-    res.redirect('/teacher/quizzes');
+  } catch (err) {
+    res.status(500).send('Server Error');
   }
 };
 
 
-// Manage Assignments
 exports.createAssignmentPost = async (req, res) => {
   const { title, description, courseId } = req.body;
   const newAssignment = new Assignment({ title, description, course: courseId });
@@ -117,14 +127,14 @@ exports.createAssignmentPost = async (req, res) => {
   res.redirect('/teacher/assignments');
 };
 
-// View Assignments
+
 exports.viewAssignments = async (req, res) => {
   const courses = await Course.find({ teacher: req.session.user._id });
   const assignments = await Assignment.find({ course: { $in: courses.map(c => c._id) } });
   res.render('teacher/assignments', { assignments });
 };
 
-// Grade Assignments
+
 exports.gradeAssignmentPost = async (req, res) => {
   const { studentId, grade } = req.body;
   await Assignment.findByIdAndUpdate(req.params.id, {
@@ -133,7 +143,7 @@ exports.gradeAssignmentPost = async (req, res) => {
   res.redirect('/teacher/assignments');
 };
 
-// View Enrolled Students for a Course
+
 exports.viewEnrolledStudents = async (req, res) => {
   const courseId = req.params.id;
 
@@ -146,7 +156,7 @@ exports.viewEnrolledStudents = async (req, res) => {
       return res.redirect('/teacher/courses');
     }
 
-    // Render the teacher dashboard with the list of students
+    
     res.render('teacher/enrolledStudents', { course, students: course.students });
   } catch (error) {
     console.error(error);
@@ -155,7 +165,7 @@ exports.viewEnrolledStudents = async (req, res) => {
   }
 };
 
-//render edit form
+
 exports.renderEditCourseForm = async (req, res) => {
   const { id } = req.params;
   try {
@@ -170,7 +180,7 @@ exports.renderEditCourseForm = async (req, res) => {
     res.redirect('/teacher/courses');
   }
 };
-//update the course
+
 exports.updateCourse = async (req, res) => {
   const { id } = req.params;
   const { title, description } = req.body;
@@ -183,7 +193,7 @@ exports.updateCourse = async (req, res) => {
     res.redirect('/teacher/courses');
   }
 };
-//for deleteing course
+
 exports.deleteCourse = async (req, res) => {
   const { id } = req.params;
   try {
@@ -197,12 +207,12 @@ exports.deleteCourse = async (req, res) => {
 };
 
 
-// File Upload - Render upload form
+
 exports.renderUploadForm = (req, res) => {
   res.render('teacher/upload'); 
 };
 
-// File Upload - Handle file upload
+
 exports.uploadFilePost = async (req, res) => {
   const { category } = req.body;
   const file = req.file;
@@ -227,7 +237,7 @@ exports.uploadFilePost = async (req, res) => {
   res.redirect('/teacher/upload');
 };
 
-// View uploaded files
+
 exports.viewUploadedFiles = async (req, res) => {
   try {
     const files = await File.find(); 
@@ -237,3 +247,45 @@ exports.viewUploadedFiles = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
+
+
+// View notifications page (where teacher can send notifications)
+exports.viewNotifications = async (req, res) => {
+    try {
+        const students = await User.find({ role: 'student' });
+        res.render('teacher/notifications', { students });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
+
+// Send notification to a student
+exports.sendNotification = async (req, res) => {
+    try {
+        const { studentId, message } = req.body;
+        const notification = new Notification({
+            teacher: req.session.user._id,
+            student: studentId,
+            message: message
+        });
+        await notification.save();
+        res.redirect('/teacher/notifications');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.viewReplies = async (req, res) => {
+  try {
+      const replies = await Reply.find({ notification: req.params.notificationId })
+                                 .populate('student', 'name');
+      res.render('teacher/viewReplies', { replies });
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  }
+};
+

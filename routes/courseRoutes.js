@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const courseController = require('../controllers/courseController');
 
-// Middleware to check if user is authenticated and authorized
+/**
+ * Middleware to check if user is authenticated
+ */
 router.use((req, res, next) => {
   if (req.session.user) {
     next();
@@ -11,19 +13,124 @@ router.use((req, res, next) => {
   }
 });
 
-// Route to view all courses
+/**
+ * @swagger
+ * /courses:
+ *   get:
+ *     summary: Retrieve a list of all courses
+ *     responses:
+ *       200:
+ *         description: A list of courses
+ *       401:
+ *         description: Unauthorized access
+ */
 router.get('/', courseController.viewAllCourses);
 
-// Route to create a new course
+/**
+ * @swagger
+ * /courses/create:
+ *   post:
+ *     summary: Create a new course
+ *     tags: 
+ *       - Courses
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Course created successfully
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized access
+ */
 router.post('/create', courseController.createCourse);
 
-// Route to get details of a specific course
+/**
+ * @swagger
+ * /courses/{id}:
+ *   get:
+ *     summary: Get course details by ID
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the course to retrieve
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Course details retrieved successfully
+ *       404:
+ *         description: Course not found
+ *       401:
+ *         description: Unauthorized access
+ */
 router.get('/:id', courseController.viewCourseDetails);
 
-// Route to update a specific course
+/**
+ * @swagger
+ * /courses/{id}:
+ *   put:
+ *     summary: Update a course by ID
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the course to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Course updated successfully
+ *       404:
+ *         description: Course not found
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized access
+ */
 router.put('/:id', courseController.updateCourse);
 
-// Route to delete a specific course
+/**
+ * @swagger
+ * /courses/{id}:
+ *   delete:
+ *     summary: Delete a course by ID
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the course to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Course deleted successfully
+ *       404:
+ *         description: Course not found
+ *       401:
+ *         description: Unauthorized access
+ */
 router.delete('/:id', courseController.deleteCourse);
 
 module.exports = router;

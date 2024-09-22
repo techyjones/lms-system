@@ -4,7 +4,9 @@ const teacherController = require('../controllers/teacherController');
 const fileController = require('../controllers/fileController');
 const User = require('../models/User');
 
-
+/**
+ * Middleware to check if user is authenticated and authorized as a teacher
+ */
 router.use((req, res, next) => {
   if (req.session.user && req.session.user.role === 'teacher') {
     next();
@@ -13,39 +15,404 @@ router.use((req, res, next) => {
   }
 });
 
-// Dashboard Route
+/**
+ * @swagger
+ * /teacher:
+ *   get:
+ *     summary: Teacher dashboard
+ *     responses:
+ *       200:
+ *         description: Render teacher dashboard
+ */
 router.get('/', teacherController.dashboard);
 
-// Course Routes
+/**
+ * @swagger
+ * /teacher/createCourse:
+ *   get:
+ *     summary: Render the form to create a new course
+ *     responses:
+ *       200:
+ *         description: Render create course form
+ */
 router.get('/createCourse', teacherController.renderCreateCourseForm);
-router.get('/courses', teacherController.viewCourses);      
-router.post('/courses', teacherController.createCoursePost); 
+
+/**
+ * @swagger
+ * /teacher/courses:
+ *   get:
+ *     summary: Retrieve all courses
+ *     responses:
+ *       200:
+ *         description: A list of courses
+ */
+router.get('/courses', teacherController.viewCourses);
+
+/**
+ * @swagger
+ * /teacher/courses:
+ *   post:
+ *     summary: Create a new course
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Course created successfully
+ */
+router.post('/courses', teacherController.createCoursePost);
+
+/**
+ * @swagger
+ * /teacher/courses/{id}/edit:
+ *   get:
+ *     summary: Render the form to edit a course
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the course to edit
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Render edit course form
+ */
 router.get('/courses/:id/edit', teacherController.renderEditCourseForm);
+
+/**
+ * @swagger
+ * /teacher/courses/{id}/edit:
+ *   post:
+ *     summary: Update a course
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the course to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Course updated successfully
+ *       404:
+ *         description: Course not found
+ */
 router.post('/courses/:id/edit', teacherController.updateCourse);
+
+/**
+ * @swagger
+ * /teacher/courses/{id}/delete:
+ *   post:
+ *     summary: Delete a course
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the course to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Course deleted successfully
+ *       404:
+ *         description: Course not found
+ */
 router.post('/courses/:id/delete', teacherController.deleteCourse);
 
+/**
+ * @swagger
+ * /teacher/quizzes:
+ *   get:
+ *     summary: Retrieve all quizzes
+ *     responses:
+ *       200:
+ *         description: A list of quizzes
+ */
+router.get('/quizzes', teacherController.viewQuizzes);
 
+/**
+ * @swagger
+ * /teacher/createQuiz:
+ *   get:
+ *     summary: Render the form to create a new quiz
+ *     responses:
+ *       200:
+ *         description: Render create quiz form
+ */
+router.get('/createQuiz', teacherController.renderCreateQuizForm);
 
-// Quiz Routes
-router.get('/quizzes', teacherController.viewQuizzes); 
-router.get('/quizzes/:id/edit', teacherController.renderEditQuizForm); 
-router.post('/quizzes/:id', teacherController.updateQuizPost); 
-router.delete('/quizzes/:id', teacherController.deleteQuizPost); 
-router.post('/quizzes', teacherController.createQuizPost); 
+/**
+ * @swagger
+ * /teacher/quizzes/create:
+ *   get:
+ *     summary: Render the form to create a new quiz
+ *     responses:
+ *       200:
+ *         description: Render create quiz form
+ */
+router.get('/quizzes/create', teacherController.renderCreateQuizForm);
 
+/**
+ * @swagger
+ * /teacher/quizzes:
+ *   post:
+ *     summary: Create a new quiz
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               questions:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     question:
+ *                       type: string
+ *                     options:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     correctAnswer:
+ *                       type: string
+ *     responses:
+ *       201:
+ *         description: Quiz created successfully
+ */
+router.post('/quizzes', teacherController.createQuizPost);
 
-// Assignment Routes
-router.get('/assignments', teacherController.viewAssignments);     
-router.post('/assignments', teacherController.createAssignmentPost); 
-router.post('/assignments/:id/grade', teacherController.gradeAssignmentPost); 
+/**
+ * @swagger
+ * /teacher/quizzes/{id}/edit:
+ *   get:
+ *     summary: Render the form to edit a quiz
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the quiz to edit
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Render edit quiz form
+ */
+router.get('/quizzes/:id/edit', teacherController.renderEditQuizForm);
 
-// File Upload Routes
-router.get('/upload', teacherController.renderUploadForm); 
-router.post('/upload', fileController.upload, teacherController.uploadFilePost); 
+/**
+ * @swagger
+ * /teacher/quizzes/{id}:
+ *   post:
+ *     summary: Update a quiz
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the quiz to update
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               questions:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     question:
+ *                       type: string
+ *                     options:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     correctAnswer:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Quiz updated successfully
+ *       404:
+ *         description: Quiz not found
+ */
+router.post('/quizzes/:id', teacherController.updateQuizPost);
 
-// View Uploaded Files
-router.get('/viewContent', teacherController.viewUploadedFiles); 
+/**
+ * @swagger
+ * /teacher/quizzes/{id}:
+ *   delete:
+ *     summary: Delete a quiz
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the quiz to delete
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Quiz deleted successfully
+ *       404:
+ *         description: Quiz not found
+ */
+router.delete('/quizzes/:id', teacherController.deleteQuizPost);
 
+/**
+ * @swagger
+ * /teacher/assignments:
+ *   get:
+ *     summary: Retrieve all assignments
+ *     responses:
+ *       200:
+ *         description: A list of assignments
+ */
+router.get('/assignments', teacherController.viewAssignments);
+
+/**
+ * @swagger
+ * /teacher/assignments:
+ *   post:
+ *     summary: Create a new assignment
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Assignment created successfully
+ */
+router.post('/assignments', teacherController.createAssignmentPost);
+
+/**
+ * @swagger
+ * /teacher/assignments/{id}/grade:
+ *   post:
+ *     summary: Grade an assignment
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the assignment to grade
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               grade:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Assignment graded successfully
+ *       404:
+ *         description: Assignment not found
+ */
+router.post('/assignments/:id/grade', teacherController.gradeAssignmentPost);
+
+/**
+ * @swagger
+ * /teacher/upload:
+ *   get:
+ *     summary: Render the file upload form
+ *     responses:
+ *       200:
+ *         description: Render upload form
+ */
+router.get('/upload', teacherController.renderUploadForm);
+
+/**
+ * @swagger
+ * /teacher/upload:
+ *   post:
+ *     summary: Upload a file
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: File uploaded successfully
+ */
+router.post('/upload', fileController.upload, teacherController.uploadFilePost);
+
+/**
+ * @swagger
+ * /teacher/viewContent:
+ *   get:
+ *     summary: View uploaded files
+ *     responses:
+ *       200:
+ *         description: Render uploaded files
+ */
+router.get('/viewContent', teacherController.viewUploadedFiles);
+
+/**
+ * @swagger
+ * /teacher/courses/{id}/students:
+ *   get:
+ *     summary: View enrolled students for a specific course
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: The ID of the course to retrieve enrolled students
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of enrolled students retrieved successfully
+ *       404:
+ *         description: Course not found
+ */
 router.get('/courses/:id/students', teacherController.viewEnrolledStudents);
+
+// Notification Routes
+router.get('/notifications', teacherController.viewNotifications);
+router.post('/notifications/send', teacherController.sendNotification);
+
 
 module.exports = router;
