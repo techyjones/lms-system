@@ -29,7 +29,14 @@ router.get('/quizzes', studentController.viewAvailableQuizzes);
 router.post('/quizzes/:id/enroll', studentController.enrollInQuiz);
 
 
+// View Assignments Route
 router.get('/assignments', studentController.viewAssignments);
+
+// Submit Assignment Route
+router.post('/assignments/:assignmentId/submit', upload.single('file'), studentController.submitAssignmentPost);
+
+// View Submission Status Route
+router.get('/assignments/submission-status', studentController.viewSubmissionStatus);
 
 
 router.get('/grades', studentController.viewGrades);

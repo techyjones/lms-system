@@ -415,4 +415,16 @@ router.get('/notifications', teacherController.viewNotifications);
 router.post('/notifications/send', teacherController.sendNotification);
 
 
+// In your teacher.js routes file
+
+// Assignment Routes
+router.get('/assignments', teacherController.viewAssignments); // View all assignments
+router.get('/assignments/create', teacherController.renderCreateAssignmentForm); // Render create assignment form
+router.post('/assignments', fileController.upload, teacherController.createAssignmentPost); // Create an assignment
+router.get('/assignments/:id', teacherController.viewAssignment); // View a specific assignment
+router.post('/assignments/:id/submit', fileController.upload, teacherController.submitAssignmentPost); // Submit an assignment
+router.post('/assignments/:id/grade', teacherController.gradeAssignmentPost); // Grade an assignment
+
+
+
 module.exports = router;

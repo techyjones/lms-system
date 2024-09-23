@@ -4,6 +4,7 @@ const Assignment = require('../models/Assignment');
 const File = require('../models/fileModel'); 
 const User = require('../models/User'); 
 const Notification = require('../models/notification');
+const StudentSubmission = require('../models/StudentSubmission');
 
 
 // Dashboard
@@ -35,9 +36,9 @@ exports.viewCourses = async (req, res) => {
 // Create Quiz (GET form)
 exports.renderCreateQuizForm = async (req, res) => {
   try {
-    const courses = await Course.find(); // Fetch all courses
-    console.log(courses); // Log the courses to see if they're fetched correctly
-    res.render('teacher/createQuiz', { courses }); // Pass courses to the view
+    const courses = await Course.find(); 
+    console.log(courses); 
+    res.render('teacher/createQuiz', { courses }); 
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
@@ -70,7 +71,7 @@ exports.createQuizPost = async (req, res) => {
 // View Quizzes
 exports.viewQuizzes = async (req, res) => {
   try {
-    const quizzes = await Quiz.find().populate('courseId', 'name'); // Populate with course name
+    const quizzes = await Quiz.find().populate('courseId', 'name'); 
     res.render('teacher/quizzes', { quizzes });
   } catch (err) {
     res.status(500).send('Server Error');
@@ -120,26 +121,64 @@ exports.deleteQuizPost = async (req, res) => {
 };
 
 
+// Render Create Assignment Form
+exports.renderCreateAssignmentForm = async (req, res) => {
+  const courses = await Course.find();
+  res.render('teacher/createAssignment', { courses });
+};
+
+// Create Assignment
 exports.createAssignmentPost = async (req, res) => {
-  const { title, description, courseId } = req.body;
-  const newAssignment = new Assignment({ title, description, course: courseId });
-  await newAssignment.save();
+  const { title, courseId, dueDate } = req.body;
+  const file = req.file; 
+
+  // Create assignment entry in the database
+  const assignment = new Assignment({
+    title,
+    courseId, 
+    dueDate,
+    fileUrl: file.path 
+  });
+
+  await assignment.save();
   res.redirect('/teacher/assignments');
 };
 
-
+// View Assignments
 exports.viewAssignments = async (req, res) => {
-  const courses = await Course.find({ teacher: req.session.user._id });
-  const assignments = await Assignment.find({ course: { $in: courses.map(c => c._id) } });
-  res.render('teacher/assignments', { assignments });
+  const assignments = await Assignment.find(); 
+  res.render('teacher/viewAssignments', { assignments });
 };
 
+// View Assignment Details
+exports.viewAssignment = async (req, res) => {
+  const assignment = await Assignment.findById(req.params.id);
+  res.render('teacher/viewAssignment', { assignment });
+};
 
-exports.gradeAssignmentPost = async (req, res) => {
-  const { studentId, grade } = req.body;
-  await Assignment.findByIdAndUpdate(req.params.id, {
-    $push: { submissions: { student: studentId, grade } }
+// Submit Assignment
+exports.submitAssignmentPost = async (req, res) => {
+  const { assignmentId } = req.params;
+  const file = req.file; 
+
+  const submission = new StudentSubmission({
+    assignmentId,
+    studentId: req.session.user._id, 
+    fileUrl: file.path 
   });
+
+  await submission.save();
+  res.redirect('/student/assignments');
+};
+
+// Grade Assignment
+exports.gradeAssignmentPost = async (req, res) => {
+  const { grade } = req.body;
+  const submission = await StudentSubmission.findById(req.params.id);
+  
+  submission.grade = grade;
+  await submission.save();
+
   res.redirect('/teacher/assignments');
 };
 

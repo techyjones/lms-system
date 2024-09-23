@@ -7,19 +7,22 @@ const app = express();
 const morgan = require('morgan');
 const path = require('path');
 const { swaggerRouter, swaggerSetup } = require('./swagger');
+const cookieParser = require('cookie-parser');  // Add this
 
 
-
+app.set('view engine', 'ejs');
 mongoose.connect('mongodb://localhost/shanai-lms', { useNewUrlParser: true, useUnifiedTopology: true });
 
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
-app.use(session({
-  secret: 'secret',
-  resave: false,
-  saveUninitialized: false
-}));
+app.use(cookieParser());  // Use cookie parser
+  app.use(session({
+    secret: 'securemywork',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true if using HTTPS
+  }));
 
 app.use('/api-docs', swaggerRouter, swaggerSetup);
 
@@ -33,7 +36,7 @@ app.use((req, res, next) => {
   });
 
 
-app.set('view engine', 'ejs');
+  
 
 // Routes
 const fileRoutes = require('./routes/fileRoutes');

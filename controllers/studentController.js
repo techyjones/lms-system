@@ -4,6 +4,8 @@ const File = require('../models/fileModel');
 const User = require('../models/User');
 const Reply = require('../models/reply');
 
+const StudentSubmission = require('../models/StudentSubmission');
+
 exports.dashboard = (req, res) => {
   res.render('student/dashboard');
 };
@@ -121,4 +123,31 @@ exports.replyNotification = async (req, res) => {
       console.error(err);
       res.status(500).send('Server Error');
   }
+};
+
+// View Assignments
+exports.viewAssignments = async (req, res) => {
+  const assignments = await Assignment.find(); 
+  res.render('student/viewAssignments', { assignments });
+};
+
+// Submit Assignment
+exports.submitAssignmentPost = async (req, res) => {
+  const { assignmentId } = req.params;
+  const file = req.file; 
+
+  const submission = new StudentSubmission({
+    assignmentId,
+    studentId: req.session.user._id, 
+    fileUrl: file.path 
+  });
+
+  await submission.save();
+  res.redirect('/student/assignments'); 
+};
+
+// View Submission Status
+exports.viewSubmissionStatus = async (req, res) => {
+  const submissions = await StudentSubmission.find({ studentId: req.session.user._id });
+  res.render('student/viewSubmissionStatus', { submissions });
 };
