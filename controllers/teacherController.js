@@ -62,7 +62,7 @@ exports.createQuizPost = async (req, res) => {
 
     const quiz = new Quiz(quizData);
     await quiz.save();
-    res.redirect('/teacher/quizzes');
+    res.redirect('/teacher/viewQuizzes');
   } catch (err) {
     res.status(500).send('Server Error');
   }
@@ -72,7 +72,7 @@ exports.createQuizPost = async (req, res) => {
 exports.viewQuizzes = async (req, res) => {
   try {
     const quizzes = await Quiz.find().populate('courseId', 'name'); 
-    res.render('teacher/quizzes', { quizzes });
+    res.render('teacher/viewQuizzes', { quizzes });
   } catch (err) {
     res.status(500).send('Server Error');
   }
@@ -104,7 +104,7 @@ exports.updateQuizPost = async (req, res) => {
     };
 
     await Quiz.findByIdAndUpdate(req.params.id, updatedQuiz);
-    res.redirect('/teacher/quizzes');
+    res.redirect('/teacher/viewQuizzes');
   } catch (err) {
     res.status(500).send('Server Error');
   }
@@ -114,7 +114,7 @@ exports.updateQuizPost = async (req, res) => {
 exports.deleteQuizPost = async (req, res) => {
   try {
     await Quiz.findByIdAndDelete(req.params.id);
-    res.redirect('/teacher/quizzes');
+    res.redirect('/teacher/viewQuizzes');
   } catch (err) {
     res.status(500).send('Server Error');
   }

@@ -16,7 +16,6 @@ mongoose.connect('mongodb://localhost/shanai-lms', { useNewUrlParser: true, useU
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
-app.use(cookieParser());  // Use cookie parser
   app.use(session({
     secret: 'securemywork',
     resave: false,
@@ -36,7 +35,7 @@ app.use((req, res, next) => {
   });
 
 
-  
+
 
 // Routes
 const fileRoutes = require('./routes/fileRoutes');

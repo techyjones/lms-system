@@ -3,6 +3,7 @@ const Assignment = require('../models/Assignment');
 const File = require('../models/fileModel'); 
 const User = require('../models/User');
 const Reply = require('../models/reply');
+const Quiz = require('../models/Quiz');
 
 const StudentSubmission = require('../models/StudentSubmission');
 
@@ -52,9 +53,14 @@ exports.enrollCourse = async (req, res) => {
 // View Available Quizzes
 exports.viewAvailableQuizzes = async (req, res) => {
   try {
-    const quizzes = await Quiz.find({}).populate('courseId');
-    res.render('student/quizzes', { quizzes });
+    // Fetch quizzes and populate course details
+    const quizzes = await Quiz.find().populate('courseId').exec();
+ // Use 'course' if that's the field name
+
+    // Render the EJS template with quizzes
+    res.render('student/studentQuizzes', { quizzes });
   } catch (error) {
+    console.error('Error viewing quizzes:', error);
     res.status(500).send("Error viewing quizzes.");
   }
 };
@@ -70,7 +76,7 @@ exports.enrollInQuiz = async (req, res) => {
       await student.save();
     }
 
-    res.redirect('/student/quizzes');
+    res.redirect('/student/studentQuizzes');
   } catch (error) {
     res.status(500).send("Error enrolling in quiz.");
   }

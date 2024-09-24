@@ -12,7 +12,7 @@ const quizSchema = new mongoose.Schema({
     required: true
   },
   questions: [
-    {
+    { 
       questionText: String,
       options: [String], // Array of options
       correctAnswer: String // Store the correct answer
