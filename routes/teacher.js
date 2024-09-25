@@ -3,6 +3,7 @@ const router = express.Router();
 const teacherController = require('../controllers/teacherController');
 const fileController = require('../controllers/fileController');
 const User = require('../models/User');
+const multer = require('multer');
 
 /**
  * Middleware to check if user is authenticated and authorized as a teacher
@@ -316,7 +317,13 @@ router.get('/assignments', teacherController.viewAssignments);
  *       201:
  *         description: Assignment created successfully
  */
-router.post('/assignments', teacherController.createAssignmentPost);
+// Route to view specific assignment details
+router.get('/assignments/:id', teacherController.viewAssignment);
+router.post('/assignments', fileController.upload, teacherController.createAssignmentPost);
+// teacher.js (routes)
+
+router.get('/viewaSubmissions', teacherController.viewStudentSubmissions);
+
 
 /**
  * @swagger
@@ -419,10 +426,12 @@ router.post('/notifications/send', teacherController.sendNotification);
 
 // Assignment Routes
 router.get('/assignments', teacherController.viewAssignments); // View all assignments
-router.get('/assignments/create', teacherController.renderCreateAssignmentForm); // Render create assignment form
-router.post('/assignments', fileController.upload, teacherController.createAssignmentPost); // Create an assignment
+router.get('/createAssignment', teacherController.renderCreateAssignmentForm); // Render create assignment form
+
 router.get('/assignments/:id', teacherController.viewAssignment); // View a specific assignment
-router.post('/assignments/:id/submit', fileController.upload, teacherController.submitAssignmentPost); // Submit an assignment
+// Route to view student submissions for a specific assignment
+router.get('/assignments/:assignmentId/submissions', teacherController.viewStudentSubmissions);
+
 router.post('/assignments/:id/grade', teacherController.gradeAssignmentPost); // Grade an assignment
 
 

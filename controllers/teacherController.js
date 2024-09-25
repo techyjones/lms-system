@@ -8,8 +8,14 @@ const StudentSubmission = require('../models/StudentSubmission');
 
 
 // Dashboard
-exports.dashboard = (req, res) => {
-  res.render('teacher/dashboard');
+exports.dashboard = async (req, res) => {
+  try {
+    const assignments = await Assignment.find(); // Fetch assignments here
+    res.render('teacher/dashboard', { assignments }); // Pass assignments to the view
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    res.status(500).send('An error occurred while fetching dashboard data.');
+  }
 };
 
 
@@ -147,29 +153,44 @@ exports.createAssignmentPost = async (req, res) => {
 // View Assignments
 exports.viewAssignments = async (req, res) => {
   const assignments = await Assignment.find(); 
-  res.render('teacher/viewAssignments', { assignments });
+  res.render('teacher/assignments', { assignments });
 };
+
 
 // View Assignment Details
 exports.viewAssignment = async (req, res) => {
-  const assignment = await Assignment.findById(req.params.id);
-  res.render('teacher/viewAssignment', { assignment });
+  try {
+    const assignment = await Assignment.findById(req.params.id); // Fetch assignment by ID
+    if (!assignment) {
+      return res.status(404).send('Assignment not found'); // Handle case when assignment is not found
+    }
+    res.render('teacher/viewAssignment', { assignment }); // Pass the assignment to the view
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
 };
 
-// Submit Assignment
-exports.submitAssignmentPost = async (req, res) => {
-  const { assignmentId } = req.params;
-  const file = req.file; 
+/// teacherController.js
+exports.viewStudentSubmissions = async (req, res) => {
+  try {
+    // Find all submissions and populate student and assignment details
+    const submissions = await StudentSubmission.find()
+      .populate('studentId', 'username') // Populate only the name field of the student
+      .populate('assignmentId', 'title'); // Populate only the title field of the assignment
 
-  const submission = new StudentSubmission({
-    assignmentId,
-    studentId: req.session.user._id, 
-    fileUrl: file.path 
-  });
+    if (submissions.length === 0) {
+      return res.status(404).send('No submissions found.');
+    }
 
-  await submission.save();
-  res.redirect('/student/assignments');
+    res.render('teacher/viewaSubmissions', { submissions });
+  } catch (error) {
+    console.error('Error fetching submissions:', error);
+    res.status(500).send('An error occurred while fetching submissions. Please try again later.');
+  }
 };
+
+
 
 // Grade Assignment
 exports.gradeAssignmentPost = async (req, res) => {

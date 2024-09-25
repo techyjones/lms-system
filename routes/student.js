@@ -36,7 +36,7 @@ router.get('/assignments', studentController.viewAssignments);
 router.post('/assignments/:assignmentId/submit', fileController.upload, studentController.submitAssignmentPost);
 
 // View Submission Status Route
-router.get('/assignments/submission-status', studentController.viewSubmissionStatus);
+router.get('/viewSubmissionStatus', studentController.viewSubmissionStatus);
 
 
 router.get('/grades', studentController.viewGrades);
