@@ -25,6 +25,12 @@ const userSchema = new mongoose.Schema({
     ref: 'Course'
   }],
   
+  // Add this field to store quizzes the student is enrolled in
+  quizzes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Quiz'
+  }],
+  
   // Fields for password reset with OTP
   otp: {
     type: String,

@@ -66,11 +66,20 @@ exports.viewAvailableQuizzes = async (req, res) => {
 };
 
 // Enroll in Quiz
+// Enroll in Quiz
 exports.enrollInQuiz = async (req, res) => {
   try {
     const quizId = req.params.id;
-    const student = await Student.findById(req.session.user._id);
     
+    // Find the student by ID
+    const student = await User.findById(req.session.user._id);
+    
+    // Check if the student exists
+    if (!student) {
+      return res.status(404).send('Student not found');
+    }
+    
+    // Check if the student is already enrolled
     if (!student.quizzes.includes(quizId)) {
       student.quizzes.push(quizId);
       await student.save();
@@ -78,9 +87,11 @@ exports.enrollInQuiz = async (req, res) => {
 
     res.redirect('/student/studentQuizzes');
   } catch (error) {
-    res.status(500).send("Error enrolling in quiz.");
+    console.error('Error enrolling in quiz:', error); // Log the error for debugging
+    res.status(500).send('Error enrolling in quiz.');
   }
 };
+
 
 exports.viewAssignments = async (req, res) => {
   const assignments = await Assignment.find(); 

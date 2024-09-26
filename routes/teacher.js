@@ -4,7 +4,7 @@ const teacherController = require('../controllers/teacherController');
 const fileController = require('../controllers/fileController');
 const User = require('../models/User');
 const multer = require('multer');
-
+const StudentQuiz = require('../models/StudentQuiz');
 /**
  * Middleware to check if user is authenticated and authorized as a teacher
  */
@@ -324,6 +324,20 @@ router.post('/assignments', fileController.upload, teacherController.createAssig
 
 router.get('/viewaSubmissions', teacherController.viewStudentSubmissions);
 
+// Route to handle grading submission
+router.post('/gradeSubmission/:submissionId', teacherController.gradeSubmission);
+
+// Route to view the scoreboard
+router.get('/scoreboard', teacherController.viewScoreboard);
+
+// Route to view enrolled students for quizzes
+router.get('/enrolledStudents', teacherController.viewEnrolledStudents);
+
+// In routes/teacher.js
+router.post('/gradeQuiz/:quizId/:studentId', teacherController.gradeQuiz);
+
+
+
 
 /**
  * @swagger
@@ -415,7 +429,7 @@ router.get('/viewContent', teacherController.viewUploadedFiles);
  *       404:
  *         description: Course not found
  */
-router.get('/courses/:id/students', teacherController.viewEnrolledStudents);
+//router.get('/courses/:id/students', teacherController.viewEnrolledStudents);
 
 // Notification Routes
 router.get('/notifications', teacherController.viewNotifications);

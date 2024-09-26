@@ -5,6 +5,7 @@ const File = require('../models/fileModel');
 const User = require('../models/User'); 
 const Notification = require('../models/notification');
 const StudentSubmission = require('../models/StudentSubmission');
+const StudentQuiz = require('../models/StudentQuiz');
 
 
 // Dashboard
@@ -190,6 +191,75 @@ exports.viewStudentSubmissions = async (req, res) => {
   }
 };
 
+// Grade submission
+exports.gradeSubmission = async (req, res) => {
+  try {
+    const submissionId = req.params.submissionId;
+    const { grade } = req.body;
+
+    // Validate the grade (should be between 1 and 10)
+    if (grade < 1 || grade > 10) {
+      return res.status(400).send('Grade must be between 1 and 10.');
+    }
+
+    // Update the submission with the grade
+    await StudentSubmission.findByIdAndUpdate(submissionId, { grade });
+
+    res.redirect('/teacher/viewaSubmissions'); // Redirect back to submissions page
+  } catch (error) {
+    console.error('Error grading submission:', error);
+    res.status(500).send('An error occurred while grading the submission.');
+  }
+};
+
+// View Scoreboard
+//exports.viewScoreboard = async (req, res) => {
+  //try {
+    // Fetch all submissions with populated student information
+    //const submissions = await StudentSubmission.find()
+      //.populate('studentId', 'username') // Populate with student username
+      //.populate('assignmentId', 'title'); // Populate with assignment title
+
+//    if (submissions.length === 0) {
+  //    return res.status(404).send('No submissions found.');
+    //}
+
+   //res.render('teacher/scoreboard', { submissions });
+ // } catch (error) {
+  //  console.error('Error fetching scoreboard:', error);
+ //   res.status(500).send('An error occurred while fetching the scoreboard. Please try again later.');
+ // }
+//};
+// View Scoreboard
+exports.viewScoreboard = async (req, res) => {
+  try {
+    // Fetch all assignment submissions with populated student and assignment information
+    const assignmentSubmissions = await StudentSubmission.find()
+      .populate('studentId', 'username') // Populate with student username
+      .populate('assignmentId', 'title'); // Populate with assignment title
+
+    // Fetch all quiz grades with populated student and quiz information
+    const quizSubmissions = await StudentQuiz.find()
+      .populate('studentId', 'username') // Populate with student username
+      .populate('quizId', 'title'); // Populate with quiz title
+
+    // If there are no submissions for either assignments or quizzes, handle the empty case
+    if (assignmentSubmissions.length === 0 && quizSubmissions.length === 0) {
+      return res.status(404).send('No submissions found.');
+    }
+
+    // Render the scoreboard view, passing both assignment and quiz submissions
+    res.render('teacher/scoreboard', {
+      assignmentSubmissions,
+      quizSubmissions
+    });
+  } catch (error) {
+    console.error('Error fetching scoreboard:', error);
+    res.status(500).send('An error occurred while fetching the scoreboard. Please try again later.');
+  }
+};
+
+
 
 
 // Grade Assignment
@@ -203,27 +273,68 @@ exports.gradeAssignmentPost = async (req, res) => {
   res.redirect('/teacher/assignments');
 };
 
-
+// View enrolled students in quizzes
 exports.viewEnrolledStudents = async (req, res) => {
-  const courseId = req.params.id;
-
   try {
-   
-    const course = await Course.findById(courseId).populate('students').exec();
+    // Find users who have enrolled in quizzes
+    const enrolledStudents = await User.find({ quizzes: { $exists: true, $ne: [] } }).populate('quizzes');
 
-    if (!course) {
-      req.flash('error', 'Course not found');
-      return res.redirect('/teacher/courses');
-    }
-
-    
-    res.render('teacher/enrolledStudents', { course, students: course.students });
+    // Render the EJS view with the enrolled students
+    res.render('teacher/enrolledStudents', { enrolledStudents });
   } catch (error) {
-    console.error(error);
-    req.flash('error', 'Error fetching students');
-    res.redirect('/teacher/courses');
+    console.error('Error fetching enrolled students:', error);
+    res.status(500).send('Error fetching enrolled students');
   }
 };
+
+// Teacher Controller
+// In your Teacher Controller
+exports.gradeQuiz = async (req, res) => {
+  try {
+    const { quizId, studentId } = req.params; // Get quizId and studentId from the URL
+    const { grade } = req.body; // Get the grade from the form
+
+    // Assuming you have a StudentQuiz model to track scores
+    await StudentQuiz.findOneAndUpdate(
+      { quizId, studentId },
+      { grade: grade }, // Update the score with the grade
+      { new: true, upsert: true } // Create if it doesn't exist
+    );
+
+    // Redirect to the scoreboard after grading
+    res.redirect('/teacher/scoreboard');
+  } catch (error) {
+    console.error('Error grading quiz:', error);
+    res.status(500).send("Error grading quiz.");
+  }
+};
+
+
+
+
+
+
+
+//exports.viewEnrolledStudents = async (req, res) => {
+ // const courseId = req.params.id;
+
+ // try {
+   
+ //   const course = await Course.findById(courseId).populate('students').exec();
+
+  //  if (!course) {
+  //    req.flash('error', 'Course not found');
+  //    return res.redirect('/teacher/courses');
+   // }
+
+    
+  //  res.render('teacher/enrolledStudents', { course, students: course.students });
+ // } catch (error) {
+ //   console.error(error);
+ //   req.flash('error', 'Error fetching students');
+ //   res.redirect('/teacher/courses');
+ // }
+//};
 
 
 exports.renderEditCourseForm = async (req, res) => {
