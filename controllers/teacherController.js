@@ -273,11 +273,18 @@ exports.gradeAssignmentPost = async (req, res) => {
   res.redirect('/teacher/assignments');
 };
 
-// View enrolled students in quizzes
+// View enrolled students in quizzes and courses
 exports.viewEnrolledStudents = async (req, res) => {
   try {
-    // Find users who have enrolled in quizzes
-    const enrolledStudents = await User.find({ quizzes: { $exists: true, $ne: [] } }).populate('quizzes');
+    // Find users who have enrolled in quizzes or courses
+    const enrolledStudents = await User.find({
+      $or: [
+        { quizzes: { $exists: true, $ne: [] } }, // Students enrolled in quizzes
+        { enrolledCourses: { $exists: true, $ne: [] } } // Students enrolled in courses
+      ]
+    })
+    .populate('quizzes') // Populate quiz details
+    .populate('enrolledCourses'); // Populate course details
 
     // Render the EJS view with the enrolled students
     res.render('teacher/enrolledStudents', { enrolledStudents });
@@ -286,6 +293,7 @@ exports.viewEnrolledStudents = async (req, res) => {
     res.status(500).send('Error fetching enrolled students');
   }
 };
+
 
 // Teacher Controller
 // In your Teacher Controller
@@ -308,6 +316,7 @@ exports.gradeQuiz = async (req, res) => {
     res.status(500).send("Error grading quiz.");
   }
 };
+
 
 
 

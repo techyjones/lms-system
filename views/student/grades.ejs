@@ -1,22 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Grades</title>
+  <title>My Grades</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <header>
-    <h1>Grades</h1>
-  </header>
-  <main>
+  <h1>My Grades</h1>
+
+  <h2>Assignment Grades</h2>
+  <% if (assignmentGrades.length === 0) { %>
+    <p>No assignment grades available yet.</p>
+  <% } else { %>
     <ul>
-      <% grades.forEach(grade => { %>
+      <% assignmentGrades.forEach(submission => { %>
         <li>
-          <h2><%= grade.courseTitle %></h2>
-          <p>Grade: <%= grade.grade %></p>
+          Assignment: <%= submission.assignmentId.title %> - Grade: <%= submission.grade !== null ? submission.grade : 'N/A' %>
         </li>
       <% }) %>
     </ul>
-  </main>
+  <% } %>
+
+  <h2>Quiz Grades</h2>
+  <% if (quizGrades.length === 0) { %>
+    <p>No quiz grades available yet.</p>
+  <% } else { %>
+    <ul>
+      <% quizGrades.forEach(quiz => { %>
+        <li>
+          Quiz: <%= quiz.quizId.title %> - Grade: <%= quiz.grade !== null ? quiz.grade : 'N/A' %>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+
 </body>
 </html>

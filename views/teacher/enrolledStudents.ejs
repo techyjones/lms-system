@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Enrolled Students in Quizzes</title>
+  <title>Enrolled Students in Quizzes and Courses</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <h1>Enrolled Students in Quizzes</h1>
+  <h1>Enrolled Students in Quizzes and Courses</h1>
 
   <% if (enrolledStudents.length === 0) { %>
-    <p>No students have enrolled in quizzes yet.</p>
+    <p>No students have enrolled in quizzes or courses yet.</p>
   <% } else { %>
     <ul>
       <% enrolledStudents.forEach(student => { %>
@@ -16,20 +16,36 @@
           <h3>Student Name: <%= student.username %></h3>
           <p>Email: <%= student.email %></p>
 
-          <!-- Loop through the quizzes each student is enrolled in -->
+          <!-- Display enrolled courses -->
+          <h4>Enrolled in Courses:</h4>
           <ul>
-            <% student.quizzes.forEach(quiz => { %>
-              <li>
-                <h4>Enrolled in Quiz: <%= quiz.title %></h4>
+            <% if (student.enrolledCourses && student.enrolledCourses.length > 0) { %>
+              <% student.enrolledCourses.forEach(course => { %>
+                <li>Course: <%= course.title %></li>
+              <% }) %>
+            <% } else { %>
+              <li>No courses enrolled.</li>
+            <% } %>
+          </ul>
 
-                <!-- Form to manually grade the quiz -->
-                <form action="/teacher/gradeQuiz/<%= quiz._id %>/<%= student._id %>" method="POST">
-                  <label for="grade">Enter Grade (1-10): </label>
-                  <input type="number" name="grade" min="1" max="10" required>
-                  <button type="submit">Submit Grade</button>
-                </form>
-              </li>
-            <% }) %>
+          <!-- Display enrolled quizzes -->
+          <h4>Enrolled in Quizzes:</h4>
+          <ul>
+            <% if (student.quizzes && student.quizzes.length > 0) { %>
+              <% student.quizzes.forEach(quiz => { %>
+                <li>
+                  Quiz: <%= quiz.title %>
+                  <!-- Form to manually grade the quiz -->
+                  <form action="/teacher/gradeQuiz/<%= quiz._id %>/<%= student._id %>" method="POST">
+                    <label for="grade">Enter Grade (1-10): </label>
+                    <input type="number" name="grade" min="1" max="10" required>
+                    <button type="submit">Submit Grade</button>
+                  </form>
+                </li>
+              <% }) %>
+            <% } else { %>
+              <li>No quizzes enrolled.</li>
+            <% } %>
           </ul>
         </li>
       <% }) %>

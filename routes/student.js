@@ -39,7 +39,9 @@ router.post('/assignments/:assignmentId/submit', fileController.upload, studentC
 router.get('/viewSubmissionStatus', studentController.viewSubmissionStatus);
 
 
+// Route to view grades
 router.get('/grades', studentController.viewGrades);
+
 
 // Route for viewing uploaded materials
 router.get('/materials', studentController.viewMaterials);

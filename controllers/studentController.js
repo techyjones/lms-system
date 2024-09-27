@@ -4,6 +4,8 @@ const File = require('../models/fileModel');
 const User = require('../models/User');
 const Reply = require('../models/reply');
 const Quiz = require('../models/Quiz');
+const StudentQuiz = require('../models/StudentQuiz');
+
 
 const StudentSubmission = require('../models/StudentSubmission');
 
@@ -99,10 +101,45 @@ exports.viewAssignments = async (req, res) => {
 };
 
 
-exports.viewGrades = (req, res) => {
-  
-  res.render('student/grades');
+// Student Controller
+exports.viewGrades = async (req, res) => {
+  try {
+    const studentId = req.session.user._id; // Get the logged-in student ID
+
+    // Fetch assignment grades for the student
+    const assignmentGrades = await StudentSubmission.find({ studentId })
+      .populate('assignmentId', 'title') // Populate assignment title
+      .select('assignmentId grade'); // Select only necessary fields (assignmentId and grade)
+
+    // Fetch quiz grades for the student
+    const quizGrades = await StudentQuiz.find({ studentId })
+      .populate('quizId', 'title') // Populate quiz title
+      .select('quizId grade'); // Select only necessary fields (quizId and grade)
+
+    if (assignmentGrades.length === 0 && quizGrades.length === 0) {
+      return res.render('student/grades', {
+        assignmentGrades: [],
+        quizGrades: [],
+        message: 'No grades available yet.'
+      });
+    }
+
+    // Render the view with the fetched grades
+    res.render('student/grades', {
+      assignmentGrades,
+      quizGrades,
+      message: null
+    });
+  } catch (error) {
+    console.error('Error fetching grades:', error);
+    res.status(500).render('student/grades', { 
+      assignmentGrades: [], 
+      quizGrades: [], 
+      message: 'An error occurred while fetching your grades. Please try again later.' 
+    });
+  }
 };
+
 
 
 exports.viewMaterials = async (req, res) => {
