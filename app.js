@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -8,6 +9,9 @@ const morgan = require('morgan');
 const path = require('path');
 const { swaggerRouter, swaggerSetup } = require('./swagger');
 const cookieParser = require('cookie-parser');  // Add this
+const twilioService = require('./services/twilioService');
+require('dotenv').config();
+
 
 
 app.set('view engine', 'ejs');
@@ -33,6 +37,7 @@ app.use((req, res, next) => {
     res.locals.error_msg = req.flash('error');
     next();
   });
+  app.use('/uploads', express.static('path/to/uploads'));
 
 
 

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -9,7 +10,13 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    validate: {
+      validator: function(v) {
+        return /^\S+@\S+\.\S+$/.test(v);
+      },
+      message: props => `${props.value} is not a valid email!`
+    }
   },
   password: {
     type: String,
@@ -20,18 +27,25 @@ const userSchema = new mongoose.Schema({
     enum: ['teacher', 'student', 'admin'],
     default: 'student'
   },
+  mobile: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator: function(v) {
+        return /^\d{10}$/.test(v); // Example for a 10-digit mobile number
+      },
+      message: props => `${props.value} is not a valid mobile number!`
+    }
+  },
   enrolledCourses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Course'
   }],
-  
-  // Add this field to store quizzes the student is enrolled in
   quizzes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Quiz'
   }],
-  
-  // Fields for password reset with OTP
   otp: {
     type: String,
     required: false
@@ -40,8 +54,6 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: false
   },
-
-  // Fields for password reset token (for token-based reset)
   resetPasswordToken: {
     type: String,
     required: false
@@ -50,6 +62,8 @@ const userSchema = new mongoose.Schema({
     type: Date,
     required: false
   }
-});
+}, { timestamps: true });
+
+
 
 module.exports = mongoose.model('User', userSchema);

@@ -6,18 +6,65 @@ const User = require('../models/User');
 const Notification = require('../models/notification');
 const StudentSubmission = require('../models/StudentSubmission');
 const StudentQuiz = require('../models/StudentQuiz');
+const Reply = require('../models/reply');
+//for pdf gen 
+const { jsPDF } = require("jspdf"); // For PDF generation
+const path = require("path");
+const fs = require("fs");
 
-
-// Dashboard
 exports.dashboard = async (req, res) => {
   try {
-    const assignments = await Assignment.find(); // Fetch assignments here
-    res.render('teacher/dashboard', { assignments }); // Pass assignments to the view
+    // Fetch assignments here
+    const assignments = await Assignment.find();
+
+    // Fetch enrolled students
+    const enrolledStudents = await User.find({
+      $or: [
+        { quizzes: { $exists: true, $ne: [] } }, // Students enrolled in quizzes
+        { enrolledCourses: { $exists: true, $ne: [] } } // Students enrolled in courses
+      ]
+    });
+
+    // Fetch total courses and quizzes
+    const totalCourses = await Course.countDocuments(); // Total number of courses
+    const totalQuizzes = await Quiz.countDocuments();   // Total number of quizzes
+
+    // Prepare data for the chart
+    const courseCounts = {}; // Object to count students per course
+    const quizCounts = {};   // Object to count students per quiz
+
+    enrolledStudents.forEach(student => {
+      // Count enrolled courses
+      student.enrolledCourses.forEach(course => {
+        courseCounts[course] = (courseCounts[course] || 0) + 1;
+      });
+
+      // Count enrolled quizzes
+      student.quizzes.forEach(quiz => {
+        quizCounts[quiz] = (quizCounts[quiz] || 0) + 1;
+      });
+    });
+
+    // Prepare chart data
+    const chartData = {
+      labels: [...new Set([...Object.keys(courseCounts), ...Object.keys(quizCounts), 'Total Courses', 'Total Quizzes'])], // Combine labels
+      data: [
+        ...Object.values(courseCounts),
+        ...Object.values(quizCounts),
+        totalCourses, // Add total courses to data
+        totalQuizzes   // Add total quizzes to data
+      ]
+    };
+
+    res.render('teacher/dashboard', { assignments, chartData }); // Pass assignments and chartData to the view
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
     res.status(500).send('An error occurred while fetching dashboard data.');
   }
 };
+
+
+
 
 
 
@@ -161,11 +208,11 @@ exports.viewAssignments = async (req, res) => {
 // View Assignment Details
 exports.viewAssignment = async (req, res) => {
   try {
-    const assignment = await Assignment.findById(req.params.id); // Fetch assignment by ID
+    const assignment = await Assignment.findById(req.params.id); 
     if (!assignment) {
-      return res.status(404).send('Assignment not found'); // Handle case when assignment is not found
+      return res.status(404).send('Assignment not found'); 
     }
-    res.render('teacher/viewAssignment', { assignment }); // Pass the assignment to the view
+    res.render('teacher/viewAssignment', { assignment }); 
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
@@ -177,8 +224,8 @@ exports.viewStudentSubmissions = async (req, res) => {
   try {
     // Find all submissions and populate student and assignment details
     const submissions = await StudentSubmission.find()
-      .populate('studentId', 'username') // Populate only the name field of the student
-      .populate('assignmentId', 'title'); // Populate only the title field of the assignment
+      .populate('studentId', 'username') 
+      .populate('assignmentId', 'title'); 
 
     if (submissions.length === 0) {
       return res.status(404).send('No submissions found.');
@@ -458,14 +505,139 @@ exports.sendNotification = async (req, res) => {
     }
 };
 
+// View replies to notifications
 exports.viewReplies = async (req, res) => {
   try {
-      const replies = await Reply.find({ notification: req.params.notificationId })
-                                 .populate('student', 'name');
-      res.render('teacher/viewReplies', { replies });
+      const teacherId = req.session.user._id; 
+      const notifications = await Notification.find({ teacher: teacherId }).populate('student', 'username');
+
+      // Populate replies for each notification
+      const notificationsWithReplies = await Promise.all(notifications.map(async notification => {
+          const replies = await Reply.find({ notification: notification._id }).populate('student', 'username');
+          return { ...notification._doc, replies };
+      }));
+
+      res.render('teacher/viewreplies', { notifications: notificationsWithReplies });
   } catch (err) {
-      console.error(err);
-      res.status(500).send('Server Error');
+      console.error('Error fetching replies:', err);
+      res.status(500).send('An error occurred while fetching replies.');
   }
 };
 
+// Render the report generation page
+exports.renderReportPage = async (req, res) => {
+  try {
+    // Fetch all students to display in the report page
+    const students = await User.find({ role: 'student' }); // Assuming you differentiate users by role
+
+    res.render('teacher/report', { students });
+  } catch (error) {
+    console.error('Error rendering report page:', error);
+    res.status(500).send('An error occurred while loading the report page.');
+  }
+};
+
+
+
+
+
+// Generate report for a student
+exports.generateStudentReport = async (req, res) => {
+  try {
+    const studentId = req.query.studentId; 
+    // Fetch student's assignment grades
+    const assignmentGrades = await StudentSubmission.find({ studentId })
+      .populate('assignmentId', 'title')
+      .select('assignmentId grade');
+
+    // Fetch student's quiz grades
+    const quizGrades = await StudentQuiz.find({ studentId })
+      .populate('quizId', 'title')
+      .select('quizId grade');
+
+    // Fetch student's enrolled courses
+    const student = await User.findById(studentId).populate('enrolledCourses', 'title');
+
+    // Initialize jsPDF
+    const doc = new jsPDF();
+
+    // Header
+    doc.text(`Report for Student ID: ${studentId}`, 10, 10);
+
+    // Assignments Section
+    doc.text("Assignments:", 10, 20);
+    if (assignmentGrades.length === 0) {
+      doc.text("No assignments available.", 10, 30);
+    } else {
+      assignmentGrades.forEach((grade, index) => {
+        doc.text(
+          `Assignment: ${grade.assignmentId.title}, Grade: ${grade.grade}`,
+          10,
+          30 + (index * 10)
+        );
+      });
+    }
+
+    // Quizzes Section
+    const quizStartY = 50 + assignmentGrades.length * 10;
+    doc.text("Quizzes:", 10, quizStartY);
+    if (quizGrades.length === 0) {
+      doc.text("No quizzes available.", 10, quizStartY + 10);
+    } else {
+      quizGrades.forEach((grade, index) => {
+        doc.text(
+          `Quiz: ${grade.quizId.title}, Grade: ${grade.grade}`,
+          10,
+          quizStartY + 10 + (index * 10)
+        );
+      });
+    }
+
+    // Enrolled Courses Section
+    const courseStartY = quizStartY + 30 + quizGrades.length * 10;
+    doc.text("Enrolled Courses:", 10, courseStartY);
+    if (student.enrolledCourses.length === 0) {
+      doc.text("No enrolled courses available.", 10, courseStartY + 10);
+    } else {
+      student.enrolledCourses.forEach((course, index) => {
+        doc.text(
+          `Course: ${course.title}`,
+          10,
+          courseStartY + 10 + (index * 10)
+        );
+      });
+    }
+
+    // Define the reports directory
+    const reportsDir = path.join(__dirname, '../reports');
+
+    // Check if the reports directory exists, create it if not
+    if (!fs.existsSync(reportsDir)) {
+      fs.mkdirSync(reportsDir);
+    }
+
+    // Convert PDF document to buffer
+    const pdfData = doc.output('arraybuffer');
+    const reportPath = path.join(reportsDir, `report_${studentId}.pdf`);
+
+    // Write PDF buffer to a file
+    fs.writeFileSync(reportPath, Buffer.from(pdfData));
+
+    // Send the PDF report to the client
+    res.download(reportPath, (err) => {
+      if (err) {
+        console.error("Error downloading the report:", err);
+        res.status(500).send('Error generating report');
+      } else {
+        // Optionally delete the file after sending
+        fs.unlink(reportPath, (err) => {
+          if (err) console.error("Error deleting report file:", err);
+        });
+      }
+    });
+
+  } catch (error) {
+    console.error("Error generating student report:", error);
+    res.status(500).send('An error occurred while generating the report.');
+  }
+};

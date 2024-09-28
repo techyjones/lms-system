@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Teacher Dashboard</title>
-  <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Add Chart.js library -->
   <style>
     body {
       margin: 0;
@@ -20,6 +20,7 @@
       color: white;
       padding: 20px;
       box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      overflow-y: auto; /* Enables scrolling */
     }
 
     #sidebar h2 {
@@ -52,6 +53,7 @@
       flex: 1;
       padding: 20px;
       background-color: #f4f4f4;
+      overflow-y: auto; /* This will ensure content also scrolls if necessary */
     }
 
     #content h1 {
@@ -61,6 +63,22 @@
     #content p {
       font-size: 16px;
       line-height: 1.6;
+    }
+
+    #chart-container {
+      width: 100%;
+      max-width: 600px;
+      margin: 20px auto;
+    }
+
+    /* Optional: Styling for when the sidebar is too long */
+    #sidebar::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #sidebar::-webkit-scrollbar-thumb {
+      background-color: #575757;
+      border-radius: 4px;
     }
   </style>
 </head>
@@ -74,18 +92,16 @@
           <li><a href="/teacher/createCourse">Create Course</a></li>
           <li><a href="/teacher/createQuiz">Create Quiz</a></li>
           <li><a href="/teacher/assignments">Manage Assignments</a></li>
-          <li><a href="/teacher/createAssignment">Create Assignment</a></li> <!-- New Assignment Creation Link -->
-          <li><a href="/teacher/gradeAssignments">Grade Assignments</a></li>
+          <li><a href="/teacher/createAssignment">Create Assignment</a></li>
+          <li><a href="/teacher/report">Generate Student Reports</a></li>
           <li><a href="/teacher/upload">Upload Educational Content</a></li>
           <li><a href="/teacher/viewContent">View Uploaded Content</a></li>
           <li><a href="/teacher/quizzes">View Quizzes</a></li>
           <li><a href="/teacher/enrolledStudents">View Enrolled Students</a></li>
-          <li><a href="/teacher/notifications">Send Notification</a></li> <!-- New Send Notification Link -->
-          <!--<li><a href="/teacher/viewNotifications">View Notifications</a></li>  New View Notifications Link -->
-         <!-- <li><a href="/teacher/viewaSubmissions">View Student Submissions</a></li>-->
-         <li><a href="/teacher/viewaSubmissions">View Student Submissions</a></li>
-         <li><a href="/teacher/scoreboard">View Scoreboard</a></li>
-
+          <li><a href="/teacher/notifications">Send Notification</a></li>
+          <li><a href="/teacher/viewreplies">View Replies</a></li>
+          <li><a href="/teacher/viewaSubmissions">View Student Submissions</a></li>
+          <li><a href="/teacher/scoreboard">View Scoreboard</a></li>
         </ul>
       </nav>
     </div>
@@ -93,11 +109,59 @@
     <div id="content">
       <h1>Welcome to the Teacher Dashboard</h1>
       <p>Work going on here</p>
-     
+
       <div>
         <h2>Your Courses</h2>
         <p>List of courses will be displayed here.</p>
       </div>
+
+      <!-- Chart Container -->
+      <div id="chart-container">
+        <canvas id="enrollmentChart"></canvas> <!-- Canvas for the pie chart -->
+      </div>
+
+      <script>
+        const ctx = document.getElementById('enrollmentChart').getContext('2d');
+        const enrollmentChart = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: <%- JSON.stringify(chartData.labels) %>, // Pass the labels from the server
+            datasets: [{
+              label: 'Enrolled Students',
+              data: <%- JSON.stringify(chartData.data) %>, // Pass the data from the server
+              backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+              ],
+              borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Enrollment Distribution'
+              }
+            }
+          }
+        });
+      </script>
     </div>
   </div>
 </body>

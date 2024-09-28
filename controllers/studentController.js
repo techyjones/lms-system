@@ -5,7 +5,7 @@ const User = require('../models/User');
 const Reply = require('../models/reply');
 const Quiz = require('../models/Quiz');
 const StudentQuiz = require('../models/StudentQuiz');
-
+const Notification = require('../models/notification');
 
 const StudentSubmission = require('../models/StudentSubmission');
 
@@ -109,12 +109,12 @@ exports.viewGrades = async (req, res) => {
     // Fetch assignment grades for the student
     const assignmentGrades = await StudentSubmission.find({ studentId })
       .populate('assignmentId', 'title') // Populate assignment title
-      .select('assignmentId grade'); // Select only necessary fields (assignmentId and grade)
+      .select('assignmentId grade'); 
 
     // Fetch quiz grades for the student
     const quizGrades = await StudentQuiz.find({ studentId })
-      .populate('quizId', 'title') // Populate quiz title
-      .select('quizId grade'); // Select only necessary fields (quizId and grade)
+      .populate('quizId', 'title') 
+      .select('quizId grade'); 
 
     if (assignmentGrades.length === 0 && quizGrades.length === 0) {
       return res.render('student/grades', {
@@ -148,34 +148,47 @@ exports.viewMaterials = async (req, res) => {
 };
 
 
-// View notifications for the student
-exports.viewNotifications = async (req, res) => {
+// View notifications for a student
+exports.viewStudentNotifications = async (req, res) => {
   try {
-      const notifications = await Notification.find({ student: req.session.user._id });
-      res.render('student/notifications', { notifications });
+      const studentId = req.session.user._id; // Get the logged-in student's ID
+      const notifications = await Notification.find({ student: studentId }).populate('teacher', 'username');
+
+      // Check if there are no notifications and provide a message
+      if (notifications.length === 0) {
+          return res.render('student/notifications', { notifications: [], message: "No notifications yet." });
+      }
+
+      // Render the notifications with the retrieved data
+      res.render('student/notifications', { notifications, message: null });
   } catch (err) {
-      console.error(err);
-      res.status(500).send('Server Error');
+      console.error('Error fetching notifications:', err);
+      res.status(500).send('An error occurred while fetching your notifications.');
   }
 };
 
-// Reply to a notification
-exports.replyNotification = async (req, res) => {
-  try {
-      const { replyMessage } = req.body;
-      const notificationId = req.params.id;
 
-      const reply = new Reply({
-          notification: notificationId,
-          student: req.session.user._id,
-          replyMessage
+// Respond to a notification
+exports.respondToNotification = async (req, res) => {
+  try {
+      const { notificationId } = req.params; 
+      const { reply } = req.body; 
+
+      // Create a new reply document
+      const replyDoc = new Reply({
+          notification: notificationId, // Link to the notification
+          student: req.session.user._id, // Logged-in student's ID
+          replyMessage: reply 
       });
 
-      await reply.save();
-      res.redirect('/student/notifications');
+      // Save the reply to the database
+      await replyDoc.save();
+
+
+      res.redirect('/student/notifications'); // Redirect to notifications page
   } catch (err) {
-      console.error(err);
-      res.status(500).send('Server Error');
+      console.error('Error responding to notification:', err);
+      res.status(500).send('An error occurred while responding to the notification.');
   }
 };
 

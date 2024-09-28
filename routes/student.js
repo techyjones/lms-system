@@ -48,8 +48,9 @@ router.get('/materials', studentController.viewMaterials);
 
 
 // Notification and Reply Routes
-router.get('/notifications', studentController.viewNotifications);
-router.post('/notifications/:id/reply', studentController.replyNotification);
-
+// Student routes
+router.get('/notifications', studentController.viewStudentNotifications);
+// Route for responding to a notification
+router.post('/respond/:notificationId', studentController.respondToNotification);
 
 module.exports = router;

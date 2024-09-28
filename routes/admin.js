@@ -41,5 +41,13 @@ router.get('/manage', async (req, res) => {
   const assignments = await Assignment.find({});
   res.render('admin/manage', { courses, quizzes, assignments });
 });
+// Route to render edit course form
+router.get('/courses/:id/edit', adminController.editCourse);
+
+// Route to update course information (make sure to handle the POST request as well)
+router.post('/courses/:id/edit', adminController.updateCourse);
+
+// Route to edit user
+router.get('/users/:id/edit', adminController.editUser);
 
 module.exports = router;

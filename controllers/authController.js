@@ -1,56 +1,91 @@
+
+const twilio = require('twilio');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
-const flash = require('connect-flash');
+const twilioService = require('../services/twilioService');
 
-// Register
 exports.registerGet = (req, res) => {
-  res.render('auth/register');
+  res.render('register');
 };
 
 exports.registerPost = async (req, res) => {
-  const { username, password, role } = req.body;
+  const { username, email, password, role, mobile } = req.body;  // Added 'email'
+
   try {
+    // Check if username already exists
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       req.flash('error', 'Username already exists');
       return res.redirect('/auth/register');
     }
 
+    // Check if mobile number already exists
+    const existingMobile = await User.findOne({ mobile });
+    if (existingMobile) {
+      req.flash('error', 'Mobile number already in use');
+      return res.redirect('/auth/register');
+    }
+
+    // Check if email already exists
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      req.flash('error', 'Email already in use');
+      return res.redirect('/auth/register');
+    }
+
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, password: hashedPassword, role });
+
+    // Create new user with mobile number and email
+    const newUser = new User({
+      username,
+      email,  // Added 'email' to the new user data
+      password: hashedPassword,
+      role,
+      mobile
+    });
+
+    // Save the user
     await newUser.save();
     req.flash('success', 'Registration successful. Please log in.');
     res.redirect('/auth/login');
   } catch (error) {
+    console.error(error);
     req.flash('error', 'Registration failed. Please try again.');
     res.redirect('/auth/register');
   }
 };
 
-// Login
+
+
 exports.loginGet = (req, res) => {
-  res.render('auth/login');
+  res.render('login');
 };
 
 exports.loginPost = async (req, res) => {
   const { username, password } = req.body;
+
   try {
     const user = await User.findOne({ username });
+    console.log('User found:', user);  // Debugging line
+
     if (user && await bcrypt.compare(password, user.password)) {
+      console.log('Password matched');  // Debugging line
       req.session.user = user;
       res.redirect(`/${user.role}`);
     } else {
+      console.log('Invalid username or password');  // Debugging line
       req.flash('error', 'Invalid username or password');
       res.redirect('/auth/login');
     }
   } catch (error) {
+    console.error('Login error:', error);  // Debugging line
     req.flash('error', 'Login failed. Please try again.');
     res.redirect('/auth/login');
   }
 };
 
-// Logout
-exports.logout = (req, res) => {
+exports.logoutGet = (req, res) => {
   req.session.destroy(err => {
     if (err) {
       req.flash('error', 'Logout failed. Please try again.');

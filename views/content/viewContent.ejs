@@ -1,4 +1,3 @@
-<!-- views/content/viewContent.ejs -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,7 +23,9 @@
           <td><%= content.description %></td>
           <td><%= content.fileType %></td>
           <td><%= content.uploadedBy.name %></td>
-          <td><a href="/uploads/<%= content.filePath %>">Download</a></td>
+          <td>
+            <a href="/uploads/<%= content.filePath %>" download>Download</a>
+          </td>
         </tr>
       <% }) %>
     </tbody>

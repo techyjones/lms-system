@@ -104,8 +104,7 @@
             <td><%= file.mimetype %></td>
             <td><%= file.uploadedBy %></td>
             <td class="actions">
-              <a href="/uploads/<%= file.category %>/<%= file.filename %>" download>Download</a>
-              
+              <a href="/uploads/materials/<%= file.filename %>" download>Download</a>
             </td>
           </tr>
         <% }) %>

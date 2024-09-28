@@ -434,6 +434,9 @@ router.get('/viewContent', teacherController.viewUploadedFiles);
 // Notification Routes
 router.get('/notifications', teacherController.viewNotifications);
 router.post('/notifications/send', teacherController.sendNotification);
+// Route to view replies
+router.get('/viewreplies', teacherController.viewReplies);
+
 
 
 // In your teacher.js routes file
@@ -447,6 +450,16 @@ router.get('/assignments/:id', teacherController.viewAssignment); // View a spec
 router.get('/assignments/:assignmentId/submissions', teacherController.viewStudentSubmissions);
 
 router.post('/assignments/:id/grade', teacherController.gradeAssignmentPost); // Grade an assignment
+
+// Route to display the report generation page
+router.get('/report', teacherController.renderReportPage);
+
+
+// Route to generate the PDF report
+// Route to generate report for a specific student
+router.get('/report/generate', teacherController.generateStudentReport);
+//gor pdf gen
+
 
 
 
