@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Course</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>Edit Course</h1>
+
+    <!-- Flash messages -->
+    <% if (messages && messages.error && messages.error.length > 0) { %>
+        <div class="error"><%= messages.error[0] %></div>
+    <% } %>
+    <% if (messages && messages.success && messages.success.length > 0) { %>
+        <div class="success"><%= messages.success[0] %></div>
+    <% } %>
+
+    <form action="/admin/courses/<%= course._id %>/edit" method="POST">
+        <div>
+            <label for="title">Course Title:</label>
+            <input type="text" id="title" name="title" value="<%= course.title %>" required>
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" required><%= course.description %></textarea>
+        </div>
+        <button type="submit">Update Course</button>
+    </form>
+</body>
+</html>

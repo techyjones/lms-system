@@ -1,0 +1,15 @@
+<<h1>Available Quizzes</h1>
+
+<% quizzes.forEach(quiz => { %>
+  <div>
+    <h2><%= quiz.title %></h2>
+
+    <!-- Check if quiz.courseId exists and has a title -->
+    <p>Course: <%= quiz.courseId ? quiz.courseId.title : 'No course assigned' %></p>
+
+    <!-- Form to enroll in the quiz -->
+    <form action="/student/quizzes/<%= quiz._id %>/enroll" method="post">
+      <button type="submit">Enroll</button>
+    </form>
+  </div>
+<% }) %>

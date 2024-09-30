@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scoreboard</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      border-bottom: 2px solid #388E3C;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+
+    /* Main Styles */
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    p {
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    /* Table Styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2rem 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      font-size: 1rem;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    td {
+      background-color: #fafafa;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    td:last-child {
+      font-weight: bold;
+    }
+
+    /* Hover Effects */
+    tr:hover {
+      background-color: #e9ffe6;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      main {
+        padding: 0.5rem;
+      }
+
+      table {
+        font-size: 0.9rem;
+      }
+
+      th, td {
+        padding: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Scoreboard</h1>
+  </header>
+  <main>
+    <% if (assignmentSubmissions.length === 0 && quizSubmissions.length === 0) { %>
+      <p>No submissions found.</p>
+    <% } else { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Type</th> <!-- This column specifies if it's an Assignment or a Quiz -->
+            <th>Title</th> <!-- Assignment or Quiz Title -->
+            <th>Grade</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Loop through Assignment Submissions -->
+          <% assignmentSubmissions.forEach(submission => { %>
+            <tr>
+              <td><%= submission.studentId.username %></td>
+              <td>Assignment</td> <!-- Indicate that this is an assignment -->
+              <td><%= submission.assignmentId.title %></td>
+              <td><%= submission.grade !== null ? submission.grade : 'N/A' %></td>
+            </tr>
+          <% }) %>
+
+          <!-- Loop through Quiz Submissions -->
+          <% quizSubmissions.forEach(quizSubmission => { %>
+            <tr>
+              <td><%= quizSubmission.studentId.username %></td>
+              <td>Quiz</td> <!-- Indicate that this is a quiz -->
+              <td><%= quizSubmission.quizId.title %></td>
+              <td><%= quizSubmission.grade !== null ? quizSubmission.grade : 'N/A' %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </main>
+</body>
+</html>

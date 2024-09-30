@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Quizzes</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Quizzes</h1>
+  </header>
+  <main>
+    <ul>
+      <% quizzes.forEach(quiz => { %>
+        <li>
+          <strong><%= quiz.title %></strong>
+          <a href="/teacher/quizzes/<%= quiz._id %>/edit">Edit</a>
+          <form action="/teacher/quizzes/<%= quiz._id %>?_method=DELETE" method="POST" style="display:inline;">
+            <button type="submit">Delete</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+    <a href="/teacher/quizzes">Create New Quiz</a>
+  </main>
+</body>
+</html>

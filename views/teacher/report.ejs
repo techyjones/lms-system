@@ -1,0 +1,11 @@
+<h1>Generate Report for Students</h1>
+
+<form action="/teacher/report/generate" method="GET">
+  <label for="student">Select Student:</label>
+  <select name="studentId" id="student">
+    <% students.forEach(student => { %>
+      <option value="<%= student._id %>"><%= student.username %></option>
+    <% }) %>
+  </select>
+  <button type="submit">Generate Report</button>
+</form>

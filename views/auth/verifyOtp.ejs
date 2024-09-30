@@ -1,0 +1,12 @@
+<form action="/auth/verify-otp" method="POST">
+    <input type="hidden" name="email" value="<%= email %>">
+    
+    <label for="otp">Enter OTP</label>
+    <input type="text" name="otp" required>
+  
+    <label for="newPassword">New Password</label>
+    <input type="password" name="newPassword" required>
+  
+    <button type="submit">Reset Password</button>
+  </form>
+  

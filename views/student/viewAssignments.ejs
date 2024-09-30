@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Assignments</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Assignments</h1>
+    <nav>
+      <ul>
+        <li><a href="/student/dashboard">Dashboard</a></li>
+        <li><a href="/student/viewSubmissionStatus">Submission Status</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <h2>Available Assignments</h2>
+    <ul>
+      <% assignments.forEach(assignment => { %>
+        <li>
+          <h3><%= assignment.title %></h3>
+          <p><strong>Course:</strong> <%= assignment.courseId.title %></p>
+          <p><strong>Due Date:</strong> <%= assignment.dueDate.toDateString() %></p>
+          <p><strong>Description:</strong> <%= assignment.description %></p>
+          
+          <!-- Button to Submit Assignment -->
+          <form action="/student/assignments/<%= assignment._id %>/submit" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" required>
+            <button type="submit">Submit Assignment</button>
+          </form>
+        </li>
+      <% }) %>
+    </ul>
+  </main>
+</body>
+</html>

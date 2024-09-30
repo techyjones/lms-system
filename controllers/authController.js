@@ -67,19 +67,19 @@ exports.loginPost = async (req, res) => {
 
   try {
     const user = await User.findOne({ username });
-    console.log('User found:', user);  // Debugging line
-
     if (user && await bcrypt.compare(password, user.password)) {
-      console.log('Password matched');  // Debugging line
       req.session.user = user;
+
+      // Send SMS notification
+      const message = 'Login successful!';
+      await twilioService.sendSMS(user.mobile, message); // Sending SMS to the user's mobile
+
       res.redirect(`/${user.role}`);
     } else {
-      console.log('Invalid username or password');  // Debugging line
       req.flash('error', 'Invalid username or password');
       res.redirect('/auth/login');
     }
   } catch (error) {
-    console.error('Login error:', error);  // Debugging line
     req.flash('error', 'Login failed. Please try again.');
     res.redirect('/auth/login');
   }

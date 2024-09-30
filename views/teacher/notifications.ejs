@@ -1,0 +1,14 @@
+<form action="/teacher/notifications/send" method="POST" style="max-width: 500px; margin: 20px auto; padding: 20px; background-color: #f4f4f4; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+  <label for="studentId" style="display: block; margin-bottom: 10px; font-weight: bold; font-size: 16px; color: #333;">Select Student:</label>
+  <select name="studentId" id="studentId" required style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; background-color: #fff;">
+    <option value="" disabled selected>Select a student</option>
+    <% students.forEach(student => { %>
+      <option value="<%= student._id %>"><%= student.username %></option>
+    <% }) %>
+  </select>
+
+  <label for="message" style="display: block; margin-bottom: 10px; font-weight: bold; font-size: 16px; color: #333;">Notification Message:</label>
+  <textarea name="message" id="message" required style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; background-color: #fff; height: 150px; resize: vertical;"></textarea>
+
+  <button type="submit" style="background-color: #4CAF50; color: white; padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s ease;">Send Notification</button>
+</form>

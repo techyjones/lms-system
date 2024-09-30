@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Assignment Details</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Assignment Details</h1>
+  </header>
+  <main>
+    <h2><%= assignment.title %></h2>
+    <p><strong>Due Date:</strong> <%= assignment.dueDate.toDateString() %></p>
+    <p><strong>Description:</strong> <%= assignment.description %></p>
+    <p><strong>File:</strong> <a href="/uploads/assignments/<%= assignment.fileUrl %>">Download</a></p>
+    
+    <!-- Add more details as needed -->
+    
+    <a href="/teacher/assignments">Back to Assignments</a>
+  </main>
+</body>
+</html>

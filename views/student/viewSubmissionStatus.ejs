@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Submission Status</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Submission Status</h1>
+  </header>
+  <main>
+    <ul>
+      <% submissions.forEach(submission => { %>
+        <li>
+          <h2>Assignment: <%= submission.assignmentId.title %></h2>
+          <p>Submitted on: <%= new Date(submission.createdAt).toLocaleDateString() %></p>
+          <p>Status: <%= submission.grade !== null ? 'Graded' : 'Ungraded' %></p>
+          <p>Grade: <%= submission.grade !== null ? submission.grade : 'N/A' %></p>
+        </li>
+      <% }) %>
+    </ul>
+    <% if (submissions.length === 0) { %>
+      <p>No submissions found.</p>
+    <% } %>
+  </main>
+</body>
+</html>

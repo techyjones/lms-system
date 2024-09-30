@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Assignment</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Create a New Assignment</h1>
+  </header>
+  <main>
+    <form action="/teacher/assignments" method="POST" enctype="multipart/form-data">
+      <div>
+        <label for="title">Assignment Title:</label>
+        <input type="text" id="title" name="title" required>
+      </div>
+      
+      <div>
+        <label for="course">Select Course:</label>
+        <select id="course" name="courseId" required>
+          <% courses.forEach(course => { %>
+            <option value="<%= course._id %>"><%= course.title %></option>
+          <% }) %>
+        </select>
+      </div>
+      
+      <div>
+        <label for="dueDate">Due Date:</label>
+        <input type="date" id="dueDate" name="dueDate" required>
+      </div>
+      
+      <div>
+        <label for="file">Upload Assignment File:</label>
+        <input type="file" id="file" name="file" required>
+      </div>
+      
+      <div>
+        <button type="submit">Create Assignment</button>
+      </div>
+    </form>
+  </main>
+</body>
+</html>

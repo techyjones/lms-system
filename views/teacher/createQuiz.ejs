@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Quiz</title>
+</head>
+<body>
+  <h1>Create a New Quiz</h1>
+  <form action="/teacher/viewQuizzes" method="post">
+    <label for="title">Quiz Title:</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="courseId">Course:</label>
+<select id="courseId" name="courseId" required>
+  <option value="" disabled selected>Select a course</option>
+  <% courses.forEach(course => { %>
+    <option value="<%= course._id %>"><%= course.title %></option>
+  <% }) %>
+</select>
+
+    <div id="questions-container">
+      <div>
+        <label>Question 1:</label>
+        <input type="text" name="questions[]" required>
+        <label>Options:</label>
+        <input type="text" name="options[0][]" required>
+        <input type="text" name="options[0][]" required>
+        <input type="text" name="options[0][]" required>
+        <input type="text" name="options[0][]" required>
+        <label>Correct Answer:</label>
+        <input type="text" name="answers[]" required>
+      </div>
+    </div>
+
+    <button type="button" onclick="addQuestion()">Add Another Question</button>
+    <button type="submit">Create Quiz</button>
+  </form>
+
+  <script>
+    let questionIndex = 1;
+    function addQuestion() {
+      const container = document.getElementById('questions-container');
+      const newBlock = document.createElement('div');
+      newBlock.innerHTML = `
+        <label>Question ${questionIndex + 1}:</label>
+        <input type="text" name="questions[]" required>
+        <label>Options:</label>
+        <input type="text" name="options[${questionIndex}][]" required>
+        <input type="text" name="options[${questionIndex}][]" required>
+        <input type="text" name="options[${questionIndex}][]" required>
+        <input type="text" name="options[${questionIndex}][]" required>
+        <label>Correct Answer:</label>
+        <input type="text" name="answers[]" required>
+      `;
+      container.appendChild(newBlock);
+      questionIndex++;
+    }
+  </script>
+</body>
+</html>

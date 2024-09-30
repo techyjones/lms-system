@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Student Submissions</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Student Submissions</h1>
+  </header>
+  <main>
+    <% if (submissions.length === 0) { %>
+      <p>No submissions found.</p>
+    <% } else { %>
+      <ul>
+        <% submissions.forEach(submission => { %>
+          <li>
+            <h2>Assignment: <%= submission.assignmentId.title %></h2>
+            <p>Submitted by: <%= submission.studentId.username %></p>
+            <p>Submitted on: <%= new Date(submission.createdAt).toLocaleDateString() %></p>
+            <p>File: <a href="<%= submission.fileUrl %>">Download Submission</a></p>
+            <p>Status: <%= submission.grade !== null ? 'Graded' : 'Ungraded' %></p>
+            <p>Grade: <%= submission.grade !== null ? submission.grade : 'N/A' %></p>
+            
+            <!-- Grading form -->
+            <form action="/teacher/gradeSubmission/<%= submission._id %>" method="POST">
+              <label for="grade">Grade (1 to 10):</label>
+              <input type="number" id="grade" name="grade" min="1" max="10" value="<%= submission.grade !== null ? submission.grade : '' %>" required>
+              <button type="submit">Submit Grade</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </main>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<h1>Your Notifications</h1>
+
+<% if (message) { %>
+  <p><%= message %></p>
+<% } %>
+
+<ul>
+  <% notifications.forEach(notification => { %>
+    <li>
+      <p>From: <%= notification.teacher.username %></p>
+      <p>Message: <%= notification.message %></p>
+
+      <% if (notification.reply) { %>
+        <p>Your Reply: <%= notification.reply.replyMessage %></p> <!-- Adjusted to access replyMessage -->
+      <% } else { %>
+        <form action="/student/respond/<%= notification._id %>" method="POST">
+          <label for="reply">Reply: </label>
+          <input type="text" name="reply" required>
+          <button type="submit">Send Reply</button>
+        </form>
+      <% } %>
+    </li>
+  <% }); %>
+</ul>
