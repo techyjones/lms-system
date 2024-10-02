@@ -288,20 +288,80 @@ router.delete('/quizzes/:id', teacherController.deleteQuizPost);
 
 /**
  * @swagger
- * /teacher/assignments:
+ * /assignments/{id}:
  *   get:
- *     summary: Retrieve all assignments
+ *     summary: View specific assignment details
+ *     tags:
+ *       - Teacher
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The assignment ID
  *     responses:
  *       200:
- *         description: A list of assignments
+ *         description: Successful response with assignment details
+ *       404:
+ *         description: Assignment not found
  */
-router.get('/assignments', teacherController.viewAssignments);
+router.get('/assignments/:id', teacherController.viewAssignment);
 
 /**
  * @swagger
- * /teacher/assignments:
+ * /assignments:
  *   post:
  *     summary: Create a new assignment
+ *     tags:
+ *       - Teacher
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *               description:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Assignment created successfully
+ *       400:
+ *         description: Bad request
+ */
+router.post('/assignments', fileController.upload, teacherController.createAssignmentPost);
+
+/**
+ * @swagger
+ * /viewaSubmissions:
+ *   get:
+ *     summary: View all student submissions
+ *     tags:
+ *       - Teacher
+ *     responses:
+ *       200:
+ *         description: Successful response with student submissions
+ */
+router.get('/viewaSubmissions', teacherController.viewStudentSubmissions);
+
+/**
+ * @swagger
+ * /gradeSubmission/{submissionId}:
+ *   post:
+ *     summary: Grade a specific assignment submission
+ *     tags:
+ *       - Teacher
+ *     parameters:
+ *       - in: path
+ *         name: submissionId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The submission ID
  *     requestBody:
  *       required: true
  *       content:
@@ -309,31 +369,79 @@ router.get('/assignments', teacherController.viewAssignments);
  *           schema:
  *             type: object
  *             properties:
- *               title:
- *                 type: string
- *               description:
- *                 type: string
+ *               grade:
+ *                 type: integer
+ *                 description: Grade between 1 and 10
  *     responses:
- *       201:
- *         description: Assignment created successfully
+ *       200:
+ *         description: Submission graded successfully
+ *       400:
+ *         description: Invalid grade or submission ID
  */
-// Route to view specific assignment details
-router.get('/assignments/:id', teacherController.viewAssignment);
-router.post('/assignments', fileController.upload, teacherController.createAssignmentPost);
-// teacher.js (routes)
-
-router.get('/viewaSubmissions', teacherController.viewStudentSubmissions);
-
-// Route to handle grading submission
 router.post('/gradeSubmission/:submissionId', teacherController.gradeSubmission);
 
-// Route to view the scoreboard
+/**
+ * @swagger
+ * /scoreboard:
+ *   get:
+ *     summary: View the scoreboard for assignments
+ *     tags:
+ *       - Teacher
+ *     responses:
+ *       200:
+ *         description: Successful response with the scoreboard
+ */
 router.get('/scoreboard', teacherController.viewScoreboard);
 
-// Route to view enrolled students for quizzes
+/**
+ * @swagger
+ * /enrolledStudents:
+ *   get:
+ *     summary: View students enrolled for quizzes
+ *     tags:
+ *       - Teacher
+ *     responses:
+ *       200:
+ *         description: Successful response with a list of enrolled students
+ */
 router.get('/enrolledStudents', teacherController.viewEnrolledStudents);
 
-// In routes/teacher.js
+/**
+ * @swagger
+ * /gradeQuiz/{quizId}/{studentId}:
+ *   post:
+ *     summary: Grade a specific quiz for a student
+ *     tags:
+ *       - Teacher
+ *     parameters:
+ *       - in: path
+ *         name: quizId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The quiz ID
+ *       - in: path
+ *         name: studentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The student ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               grade:
+ *                 type: integer
+ *                 description: Grade for the quiz
+ *     responses:
+ *       200:
+ *         description: Quiz graded successfully
+ *       400:
+ *         description: Invalid quiz ID, student ID, or grade
+ */
 router.post('/gradeQuiz/:quizId/:studentId', teacherController.gradeQuiz);
 
 
@@ -411,55 +519,203 @@ router.post('/upload', fileController.upload, teacherController.uploadFilePost);
  */
 router.get('/viewContent', teacherController.viewUploadedFiles);
 
+
+
 /**
  * @swagger
- * /teacher/courses/{id}/students:
+ * /notifications:
  *   get:
- *     summary: View enrolled students for a specific course
- *     parameters:
- *       - name: id
- *         in: path
- *         required: true
- *         description: The ID of the course to retrieve enrolled students
- *         schema:
- *           type: string
+ *     summary: View all notifications sent to students
+ *     tags:
+ *       - Teacher
  *     responses:
  *       200:
- *         description: List of enrolled students retrieved successfully
- *       404:
- *         description: Course not found
+ *         description: Successful response with a list of notifications
  */
-//router.get('/courses/:id/students', teacherController.viewEnrolledStudents);
-
-// Notification Routes
 router.get('/notifications', teacherController.viewNotifications);
+
+/**
+ * @swagger
+ * /notifications/send:
+ *   post:
+ *     summary: Send a notification to a student
+ *     tags:
+ *       - Teacher
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 description: The content of the notification
+ *               studentId:
+ *                 type: string
+ *                 description: The ID of the student
+ *     responses:
+ *       201:
+ *         description: Notification sent successfully
+ *       400:
+ *         description: Invalid input or missing parameters
+ */
 router.post('/notifications/send', teacherController.sendNotification);
-// Route to view replies
+
+/**
+ * @swagger
+ * /viewreplies:
+ *   get:
+ *     summary: View replies from students to the notifications
+ *     tags:
+ *       - Teacher
+ *     responses:
+ *       200:
+ *         description: Successful response with a list of replies
+ */
 router.get('/viewreplies', teacherController.viewReplies);
 
 
 
-// In your teacher.js routes file
 
-// Assignment Routes
-router.get('/assignments', teacherController.viewAssignments); // View all assignments
-router.get('/createAssignment', teacherController.renderCreateAssignmentForm); // Render create assignment form
 
-router.get('/assignments/:id', teacherController.viewAssignment); // View a specific assignment
-// Route to view student submissions for a specific assignment
+/**
+ * @swagger
+ * /assignments:
+ *   get:
+ *     summary: View all assignments
+ *     tags:
+ *       - Teacher
+ *     responses:
+ *       200:
+ *         description: Successful response with a list of assignments
+ */
+router.get('/assignments', teacherController.viewAssignments);
+
+/**
+ * @swagger
+ * /createAssignment:
+ *   get:
+ *     summary: Render the form to create a new assignment
+ *     tags:
+ *       - Teacher
+ *     responses:
+ *       200:
+ *         description: Successful response with the assignment creation form
+ */
+router.get('/createAssignment', teacherController.renderCreateAssignmentForm);
+
+/**
+ * @swagger
+ * /assignments/{id}:
+ *   get:
+ *     summary: View details of a specific assignment
+ *     tags:
+ *       - Teacher
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the assignment
+ *     responses:
+ *       200:
+ *         description: Successful response with assignment details
+ *       404:
+ *         description: Assignment not found
+ */
+router.get('/assignments/:id', teacherController.viewAssignment);
+
+/**
+ * @swagger
+ * /assignments/{assignmentId}/submissions:
+ *   get:
+ *     summary: View student submissions for a specific assignment
+ *     tags:
+ *       - Teacher
+ *     parameters:
+ *       - in: path
+ *         name: assignmentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the assignment
+ *     responses:
+ *       200:
+ *         description: Successful response with student submissions
+ *       404:
+ *         description: Assignment not found
+ */
 router.get('/assignments/:assignmentId/submissions', teacherController.viewStudentSubmissions);
 
-router.post('/assignments/:id/grade', teacherController.gradeAssignmentPost); // Grade an assignment
+/**
+ * @swagger
+ * /assignments/{id}/grade:
+ *   post:
+ *     summary: Grade a specific assignment
+ *     tags:
+ *       - Teacher
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The assignment ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               grade:
+ *                 type: integer
+ *                 description: The grade to assign to the submission
+ *     responses:
+ *       200:
+ *         description: Assignment graded successfully
+ *       400:
+ *         description: Invalid assignment ID or grade
+ */
+router.post('/assignments/:id/grade', teacherController.gradeAssignmentPost);
 
-// Route to display the report generation page
+
+/**
+ * @swagger
+ * /report:
+ *   get:
+ *     summary: Display the report generation page
+ *     tags:
+ *       - Teacher
+ *     responses:
+ *       200:
+ *         description: Report generation page rendered successfully
+ */
 router.get('/report', teacherController.renderReportPage);
 
-
-// Route to generate the PDF report
-// Route to generate report for a specific student
+/**
+ * @swagger
+ * /report/generate:
+ *   get:
+ *     summary: Generate a PDF report for a specific student
+ *     tags:
+ *       - Teacher
+ *     parameters:
+ *       - in: query
+ *         name: studentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the student for which the report is generated
+ *     responses:
+ *       200:
+ *         description: Report generated successfully
+ *       404:
+ *         description: Student not found
+ */
 router.get('/report/generate', teacherController.generateStudentReport);
-//gor pdf gen
-
 
 
 

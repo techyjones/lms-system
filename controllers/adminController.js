@@ -10,23 +10,30 @@ exports.dashboard = (req, res) => {
   res.render('admin/dashboard');
 };
 
-
 exports.manageUsers = async (req, res) => {
-  const users = await User.find();
-  res.render('admin/users', { users });
+  try {
+    const users = await User.find({});
+    res.render('admin/users', { users });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).send('Server error');
+  }
 };
-
 
 exports.config = (req, res) => {
   res.render('admin/config');
 };
 
-
 exports.manageContent = async (req, res) => {
-  const courses = await Course.find();
-  const quizzes = await Quiz.find();
-  const assignments = await Assignment.find();
-  res.render('admin/manage', { courses, quizzes, assignments });
+  try {
+    const courses = await Course.find({});
+    const quizzes = await Quiz.find({});
+    const assignments = await Assignment.find({});
+    res.render('admin/manage', { courses, quizzes, assignments });
+  } catch (error) {
+    console.error('Error fetching content:', error);
+    res.status(500).send('Server error');
+  }
 };
 
 

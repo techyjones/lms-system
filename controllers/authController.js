@@ -71,8 +71,8 @@ exports.loginPost = async (req, res) => {
       req.session.user = user;
 
       // Send SMS notification
-      const message = 'Login successful!';
-      await twilioService.sendSMS(user.mobile, message); // Sending SMS to the user's mobile
+     // const message = 'Login successful!';
+     // await twilioService.sendSMS(user.mobile, message); // Sending SMS to the user's mobile
 
       res.redirect(`/${user.role}`);
     } else {
