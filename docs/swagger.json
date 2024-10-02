@@ -1,0 +1,1543 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "My API",
+    "version": "1.0.0",
+    "description": "API documentation for my Express application"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/admin": {
+      "get": {
+        "summary": "Admin dashboard",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Admin dashboard rendered successfully."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "summary": "Manage users",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved users.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/admin/config": {
+      "get": {
+        "summary": "Admin configuration page",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuration page rendered successfully."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/admin/manage": {
+      "get": {
+        "summary": "Manage courses, quizzes, and assignments",
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved content.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "courses": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Course"
+                      }
+                    },
+                    "quizzes": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Quiz"
+                      }
+                    },
+                    "assignments": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Assignment"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/admin/courses/{id}/edit": {
+      "get": {
+        "summary": "Edit a course by ID",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The course ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Course edit form rendered successfully."
+          },
+          "404": {
+            "description": "Course not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      },
+      "post": {
+        "summary": "Update a course by ID",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The course ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "The course title"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "The course description"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Course updated successfully."
+          },
+          "404": {
+            "description": "Course not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/admin/users/{id}/edit": {
+      "get": {
+        "summary": "Edit a user by ID",
+        "tags": [
+          "Admin"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The user ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User edit form rendered successfully."
+          },
+          "404": {
+            "description": "User not found."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "get": {
+        "summary": "Render the registration page",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Render the registration form"
+          }
+        }
+      },
+      "post": {
+        "summary": "Register a new user",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "The username for the new user"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "The email address for the new user"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The password for the new user"
+                  },
+                  "role": {
+                    "type": "string",
+                    "description": "The role of the new user (e.g., student, teacher)"
+                  },
+                  "mobile": {
+                    "type": "string",
+                    "description": "The mobile number for the new user"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "302": {
+            "description": "Registration successful, redirect to login"
+          },
+          "400": {
+            "description": "Registration failed due to validation errors"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "get": {
+        "summary": "Render the login page",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Render the login form"
+          }
+        }
+      },
+      "post": {
+        "summary": "Log in an existing user",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "The username of the user"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The password of the user"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "302": {
+            "description": "Login successful, redirect to user role dashboard"
+          },
+          "401": {
+            "description": "Invalid username or password"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "summary": "Log out the current user",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "302": {
+            "description": "Logout successful, redirect to home page"
+          }
+        }
+      }
+    },
+    "/courses": {
+      "get": {
+        "summary": "Retrieve a list of all courses",
+        "responses": {
+          "200": {
+            "description": "A list of courses"
+          },
+          "401": {
+            "description": "Unauthorized access"
+          }
+        }
+      }
+    },
+    "/courses/create": {
+      "post": {
+        "summary": "Create a new course",
+        "tags": [
+          "Courses"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Course created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized access"
+          }
+        }
+      }
+    },
+    "/courses/{id}": {
+      "get": {
+        "summary": "Get course details by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the course to retrieve",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Course details retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "404": {
+            "description": "Course not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a course by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the course to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Course updated successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "404": {
+            "description": "Course not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a course by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the course to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Course deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized access"
+          },
+          "404": {
+            "description": "Course not found"
+          }
+        }
+      }
+    },
+    "/student/": {
+      "get": {
+        "summary": "View student dashboard",
+        "tags": [
+          "Students"
+        ],
+        "responses": {
+          "200": {
+            "description": "Rendered student dashboard"
+          }
+        }
+      }
+    },
+    "/student/courses": {
+      "get": {
+        "summary": "View available courses",
+        "tags": [
+          "Students"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of available courses"
+          }
+        }
+      }
+    },
+    "/student/courses/enroll/{id}": {
+      "get": {
+        "summary": "Enroll in a course",
+        "tags": [
+          "Students"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the course to enroll in",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully enrolled in the course"
+          }
+        }
+      }
+    },
+    "/studentQuizzes": {
+      "get": {
+        "summary": "View available quizzes",
+        "tags": [
+          "Students"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of available quizzes"
+          }
+        }
+      }
+    },
+    "/quizzes/{id}/enroll": {
+      "post": {
+        "summary": "Enroll in a quiz",
+        "tags": [
+          "Students"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the quiz to enroll in",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully enrolled in the quiz"
+          }
+        }
+      }
+    },
+    "/assignments": {
+      "get": {
+        "summary": "View all assignments",
+        "tags": [
+          "Teacher"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with a list of assignments"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new assignment",
+        "tags": [
+          "Teacher"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Assignment created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/assignments/{assignmentId}/submit": {
+      "post": {
+        "summary": "Submit an assignment",
+        "tags": [
+          "Students"
+        ],
+        "parameters": [
+          {
+            "name": "assignmentId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the assignment to submit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Assignment submitted successfully"
+          }
+        }
+      }
+    },
+    "/student/viewSubmissionStatus": {
+      "get": {
+        "summary": "View the status of submitted assignments",
+        "tags": [
+          "Students"
+        ],
+        "responses": {
+          "200": {
+            "description": "View the submission status"
+          }
+        }
+      }
+    },
+    "/student/grades": {
+      "get": {
+        "summary": "View student's grades",
+        "tags": [
+          "Students"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved student's grades",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "assignmentGrades": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "assignmentId": {
+                            "type": "string",
+                            "description": "The ID of the assignment"
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "The title of the assignment"
+                          },
+                          "grade": {
+                            "type": "string",
+                            "description": "The grade achieved in the assignment"
+                          }
+                        }
+                      }
+                    },
+                    "quizGrades": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "quizId": {
+                            "type": "string",
+                            "description": "The ID of the quiz"
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "The title of the quiz"
+                          },
+                          "grade": {
+                            "type": "string",
+                            "description": "The grade achieved in the quiz"
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "A message indicating the status of the grades"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurred while fetching grades"
+          }
+        }
+      }
+    },
+    "/notifications": {
+      "get": {
+        "summary": "View all notifications sent to students",
+        "tags": [
+          "Teacher"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with a list of notifications"
+          }
+        }
+      }
+    },
+    "/respond/{notificationId}": {
+      "post": {
+        "summary": "Respond to a notification",
+        "tags": [
+          "Students"
+        ],
+        "parameters": [
+          {
+            "name": "notificationId",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the notification to respond to",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Response data for the notification",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "response": {
+                    "type": "string",
+                    "description": "The student's response"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Response submitted successfully"
+          }
+        }
+      }
+    },
+    "/teacher": {
+      "get": {
+        "summary": "Teacher dashboard",
+        "responses": {
+          "200": {
+            "description": "Render teacher dashboard"
+          }
+        }
+      }
+    },
+    "/teacher/createCourse": {
+      "get": {
+        "summary": "Render the form to create a new course",
+        "responses": {
+          "200": {
+            "description": "Render create course form"
+          }
+        }
+      }
+    },
+    "/teacher/courses": {
+      "get": {
+        "summary": "Retrieve all courses",
+        "responses": {
+          "200": {
+            "description": "A list of courses"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new course",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Course created successfully"
+          }
+        }
+      }
+    },
+    "/teacher/courses/{id}/edit": {
+      "get": {
+        "summary": "Render the form to edit a course",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the course to edit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Render edit course form"
+          }
+        }
+      },
+      "post": {
+        "summary": "Update a course",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the course to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Course updated successfully"
+          },
+          "404": {
+            "description": "Course not found"
+          }
+        }
+      }
+    },
+    "/teacher/courses/{id}/delete": {
+      "post": {
+        "summary": "Delete a course",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the course to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Course deleted successfully"
+          },
+          "404": {
+            "description": "Course not found"
+          }
+        }
+      }
+    },
+    "/teacher/quizzes": {
+      "get": {
+        "summary": "Retrieve all quizzes",
+        "responses": {
+          "200": {
+            "description": "A list of quizzes"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new quiz",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "questions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "question": {
+                          "type": "string"
+                        },
+                        "options": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "correctAnswer": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Quiz created successfully"
+          }
+        }
+      }
+    },
+    "/teacher/createQuiz": {
+      "get": {
+        "summary": "Render the form to create a new quiz",
+        "responses": {
+          "200": {
+            "description": "Render create quiz form"
+          }
+        }
+      }
+    },
+    "/teacher/quizzes/create": {
+      "get": {
+        "summary": "Render the form to create a new quiz",
+        "responses": {
+          "200": {
+            "description": "Render create quiz form"
+          }
+        }
+      }
+    },
+    "/teacher/quizzes/{id}/edit": {
+      "get": {
+        "summary": "Render the form to edit a quiz",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the quiz to edit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Render edit quiz form"
+          }
+        }
+      }
+    },
+    "/teacher/quizzes/{id}": {
+      "post": {
+        "summary": "Update a quiz",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the quiz to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "questions": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "question": {
+                          "type": "string"
+                        },
+                        "options": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "correctAnswer": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Quiz updated successfully"
+          },
+          "404": {
+            "description": "Quiz not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a quiz",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the quiz to delete",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Quiz deleted successfully"
+          },
+          "404": {
+            "description": "Quiz not found"
+          }
+        }
+      }
+    },
+    "/assignments/{id}": {
+      "get": {
+        "summary": "View details of a specific assignment",
+        "tags": [
+          "Teacher"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the assignment"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with assignment details"
+          },
+          "404": {
+            "description": "Assignment not found"
+          }
+        }
+      }
+    },
+    "/viewaSubmissions": {
+      "get": {
+        "summary": "View all student submissions",
+        "tags": [
+          "Teacher"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with student submissions"
+          }
+        }
+      }
+    },
+    "/gradeSubmission/{submissionId}": {
+      "post": {
+        "summary": "Grade a specific assignment submission",
+        "tags": [
+          "Teacher"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "submissionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The submission ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "grade": {
+                    "type": "integer",
+                    "description": "Grade between 1 and 10"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Submission graded successfully"
+          },
+          "400": {
+            "description": "Invalid grade or submission ID"
+          }
+        }
+      }
+    },
+    "/scoreboard": {
+      "get": {
+        "summary": "View the scoreboard for assignments",
+        "tags": [
+          "Teacher"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the scoreboard"
+          }
+        }
+      }
+    },
+    "/enrolledStudents": {
+      "get": {
+        "summary": "View students enrolled for quizzes",
+        "tags": [
+          "Teacher"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with a list of enrolled students"
+          }
+        }
+      }
+    },
+    "/gradeQuiz/{quizId}/{studentId}": {
+      "post": {
+        "summary": "Grade a specific quiz for a student",
+        "tags": [
+          "Teacher"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quizId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The quiz ID"
+          },
+          {
+            "in": "path",
+            "name": "studentId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The student ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "grade": {
+                    "type": "integer",
+                    "description": "Grade for the quiz"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Quiz graded successfully"
+          },
+          "400": {
+            "description": "Invalid quiz ID, student ID, or grade"
+          }
+        }
+      }
+    },
+    "/teacher/assignments/{id}/grade": {
+      "post": {
+        "summary": "Grade an assignment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the assignment to grade",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "grade": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Assignment graded successfully"
+          },
+          "404": {
+            "description": "Assignment not found"
+          }
+        }
+      }
+    },
+    "/teacher/upload": {
+      "get": {
+        "summary": "Render the file upload form",
+        "responses": {
+          "200": {
+            "description": "Render upload form"
+          }
+        }
+      },
+      "post": {
+        "summary": "Upload a file",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "File uploaded successfully"
+          }
+        }
+      }
+    },
+    "/teacher/viewContent": {
+      "get": {
+        "summary": "View uploaded files",
+        "responses": {
+          "200": {
+            "description": "Render uploaded files"
+          }
+        }
+      }
+    },
+    "/notifications/send": {
+      "post": {
+        "summary": "Send a notification to a student",
+        "tags": [
+          "Teacher"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "The content of the notification"
+                  },
+                  "studentId": {
+                    "type": "string",
+                    "description": "The ID of the student"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Notification sent successfully"
+          },
+          "400": {
+            "description": "Invalid input or missing parameters"
+          }
+        }
+      }
+    },
+    "/viewreplies": {
+      "get": {
+        "summary": "View replies from students to the notifications",
+        "tags": [
+          "Teacher"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with a list of replies"
+          }
+        }
+      }
+    },
+    "/createAssignment": {
+      "get": {
+        "summary": "Render the form to create a new assignment",
+        "tags": [
+          "Teacher"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with the assignment creation form"
+          }
+        }
+      }
+    },
+    "/assignments/{assignmentId}/submissions": {
+      "get": {
+        "summary": "View student submissions for a specific assignment",
+        "tags": [
+          "Teacher"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "assignmentId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the assignment"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with student submissions"
+          },
+          "404": {
+            "description": "Assignment not found"
+          }
+        }
+      }
+    },
+    "/assignments/{id}/grade": {
+      "post": {
+        "summary": "Grade a specific assignment",
+        "tags": [
+          "Teacher"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The assignment ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "grade": {
+                    "type": "integer",
+                    "description": "The grade to assign to the submission"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Assignment graded successfully"
+          },
+          "400": {
+            "description": "Invalid assignment ID or grade"
+          }
+        }
+      }
+    },
+    "/report": {
+      "get": {
+        "summary": "Display the report generation page",
+        "tags": [
+          "Teacher"
+        ],
+        "responses": {
+          "200": {
+            "description": "Report generation page rendered successfully"
+          }
+        }
+      }
+    },
+    "/report/generate": {
+      "get": {
+        "summary": "Generate a PDF report for a specific student",
+        "tags": [
+          "Teacher"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "studentId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The ID of the student for which the report is generated"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report generated successfully"
+          },
+          "404": {
+            "description": "Student not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": [
+    {
+      "name": "Admin",
+      "description": "Admin-related operations"
+    },
+    {
+      "name": "Auth",
+      "description": "Authentication related APIs"
+    }
+  ]
+}
