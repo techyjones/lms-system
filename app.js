@@ -11,6 +11,9 @@ const { swaggerRouter, swaggerSetup } = require('./swagger');
 const cookieParser = require('cookie-parser');  // Add this
 const twilioService = require('./services/twilioService');
 require('dotenv').config();
+const cors = require('cors'); // Add this
+
+app.use(cors());
 
 
 
