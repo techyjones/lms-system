@@ -117,7 +117,7 @@
             <tr>
               <td><%= submission.studentId.username %></td>
               <td>Assignment</td> <!-- Indicate that this is an assignment -->
-              <td><%= submission.assignmentId.title %></td>
+              <td><%= submission.assignmentId ? submission.assignmentId.title : 'Assignment Deleted' %></td>
               <td><%= submission.grade !== null ? submission.grade : 'N/A' %></td>
             </tr>
           <% }) %>
@@ -127,7 +127,7 @@
             <tr>
               <td><%= quizSubmission.studentId.username %></td>
               <td>Quiz</td> <!-- Indicate that this is a quiz -->
-              <td><%= quizSubmission.quizId.title %></td>
+              <td><%= quizSubmission.quizId ? quizSubmission.quizId.title : 'Quiz Deleted' %></td>
               <td><%= quizSubmission.grade !== null ? quizSubmission.grade : 'N/A' %></td>
             </tr>
           <% }) %>

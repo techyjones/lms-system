@@ -150,6 +150,8 @@ router.post('/courses/:id/delete', teacherController.deleteCourse);
  *         description: A list of quizzes
  */
 router.get('/quizzes', teacherController.viewQuizzes);
+// Route to view quizzes
+router.get('/viewQuizzes', teacherController.viewQuizzes);  // This should exist
 
 /**
  * @swagger
@@ -288,7 +290,7 @@ router.delete('/quizzes/:id', teacherController.deleteQuizPost);
 
 /**
  * @swagger
- * /assignments/{id}:
+ * /teacher/assignments/{id}:
  *   get:
  *     summary: View specific assignment details
  *     tags:
@@ -310,7 +312,7 @@ router.get('/assignments/:id', teacherController.viewAssignment);
 
 /**
  * @swagger
- * /assignments:
+ * /teacher/assignments:
  *   post:
  *     summary: Create a new assignment
  *     tags:
@@ -337,7 +339,7 @@ router.post('/assignments', fileController.upload, teacherController.createAssig
 
 /**
  * @swagger
- * /viewaSubmissions:
+ * /teacher/viewaSubmissions:
  *   get:
  *     summary: View all student submissions
  *     tags:
@@ -350,7 +352,7 @@ router.get('/viewaSubmissions', teacherController.viewStudentSubmissions);
 
 /**
  * @swagger
- * /gradeSubmission/{submissionId}:
+ * /teacher/gradeSubmission/{submissionId}:
  *   post:
  *     summary: Grade a specific assignment submission
  *     tags:
@@ -382,7 +384,7 @@ router.post('/gradeSubmission/:submissionId', teacherController.gradeSubmission)
 
 /**
  * @swagger
- * /scoreboard:
+ * /teacher/scoreboard:
  *   get:
  *     summary: View the scoreboard for assignments
  *     tags:
@@ -395,7 +397,7 @@ router.get('/scoreboard', teacherController.viewScoreboard);
 
 /**
  * @swagger
- * /enrolledStudents:
+ * /teacher/enrolledStudents:
  *   get:
  *     summary: View students enrolled for quizzes
  *     tags:
@@ -408,7 +410,7 @@ router.get('/enrolledStudents', teacherController.viewEnrolledStudents);
 
 /**
  * @swagger
- * /gradeQuiz/{quizId}/{studentId}:
+ * /teacher/gradeQuiz/{quizId}/{studentId}:
  *   post:
  *     summary: Grade a specific quiz for a student
  *     tags:
@@ -523,7 +525,7 @@ router.get('/viewContent', teacherController.viewUploadedFiles);
 
 /**
  * @swagger
- * /notifications:
+ * /teacher/notifications:
  *   get:
  *     summary: View all notifications sent to students
  *     tags:
@@ -564,7 +566,7 @@ router.post('/notifications/send', teacherController.sendNotification);
 
 /**
  * @swagger
- * /viewreplies:
+ * /teacher/viewreplies:
  *   get:
  *     summary: View replies from students to the notifications
  *     tags:
@@ -581,7 +583,7 @@ router.get('/viewreplies', teacherController.viewReplies);
 
 /**
  * @swagger
- * /assignments:
+ * /teacher/assignments:
  *   get:
  *     summary: View all assignments
  *     tags:
@@ -594,7 +596,7 @@ router.get('/assignments', teacherController.viewAssignments);
 
 /**
  * @swagger
- * /createAssignment:
+ * /teacher/createAssignment:
  *   get:
  *     summary: Render the form to create a new assignment
  *     tags:
@@ -607,7 +609,7 @@ router.get('/createAssignment', teacherController.renderCreateAssignmentForm);
 
 /**
  * @swagger
- * /assignments/{id}:
+ * /teacher/assignments/{id}:
  *   get:
  *     summary: View details of a specific assignment
  *     tags:
@@ -629,7 +631,7 @@ router.get('/assignments/:id', teacherController.viewAssignment);
 
 /**
  * @swagger
- * /assignments/{assignmentId}/submissions:
+ * /teacher/assignments/{assignmentId}/submissions:
  *   get:
  *     summary: View student submissions for a specific assignment
  *     tags:
@@ -651,7 +653,7 @@ router.get('/assignments/:assignmentId/submissions', teacherController.viewStude
 
 /**
  * @swagger
- * /assignments/{id}/grade:
+ * /teacher/assignments/{id}/grade:
  *   post:
  *     summary: Grade a specific assignment
  *     tags:
@@ -684,7 +686,7 @@ router.post('/assignments/:id/grade', teacherController.gradeAssignmentPost);
 
 /**
  * @swagger
- * /report:
+ * /teacher/report:
  *   get:
  *     summary: Display the report generation page
  *     tags:
@@ -697,7 +699,7 @@ router.get('/report', teacherController.renderReportPage);
 
 /**
  * @swagger
- * /report/generate:
+ * /teacher/report/generate:
  *   get:
  *     summary: Generate a PDF report for a specific student
  *     tags:

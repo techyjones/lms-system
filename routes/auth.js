@@ -119,4 +119,12 @@ router.post('/login', authController.loginPost);
 // Logout route
 router.get('/logout', authController.logoutGet);
 
+// Forget Password Routes
+router.get('/forgetPassword', authController.forgetPasswordGet);
+router.post('/forgetPassword', authController.forgetPasswordPost);
+
+// Reset Password Routes
+router.get('/resetPassword/:userId', authController.resetPasswordGet);
+router.post('/resetPassword/:userId', authController.resetPasswordPost);
+
 module.exports = router;

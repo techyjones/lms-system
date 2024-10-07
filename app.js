@@ -10,6 +10,7 @@ const morgan = require('morgan');
 const path = require('path');
 const { swaggerRouter, swaggerSetup } = require('./swagger');
 const cookieParser = require('cookie-parser');
+const methodOverride = require('method-override');
 
 // Custom CORS options
 const corsOptions = {
@@ -19,6 +20,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions)); // Apply CORS middleware
+app.use(methodOverride('_method')); // This line enables method overriding
 
 app.set('view engine', 'ejs');
 mongoose.connect('mongodb://localhost/shanai-lms', { useNewUrlParser: true, useUnifiedTopology: true });

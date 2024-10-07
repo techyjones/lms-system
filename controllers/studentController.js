@@ -93,6 +93,56 @@ exports.enrollInQuiz = async (req, res) => {
     res.status(500).send('Error enrolling in quiz.');
   }
 };
+// Render available quizzes for a student to attend
+exports.viewExistingQuizzes = async (req, res) => {
+  try {
+    // Fetch all quizzes and populate the associated course's name field
+    const quizzes = await Quiz.find().populate('courseId', 'name').exec();
+    
+    // Render the EJS view and pass the quizzes data
+    res.render('student/viewExistingQuizzes', { quizzes });
+  } catch (err) {
+    console.error('Error fetching quizzes:', err); // Log the error for debugging
+    res.status(500).send('Server Error');
+  }
+};
+
+
+// Render quiz page for a student
+exports.renderQuizPage = async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.quizId).populate('courseId', 'name');
+    res.render('student/attendQuiz', { quiz });
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+};
+
+
+
+// Handle quiz submission and calculate the result
+exports.submitQuiz = async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.quizId);
+    const { answers } = req.body;
+
+    let score = 0;
+    quiz.questions.forEach((question, index) => {
+      if (question.correctAnswer === answers[index]) {
+        score++;
+      }
+    });
+
+    const totalQuestions = quiz.questions.length;
+    const percentageScore = (score / totalQuestions) * 100;
+
+    // You can save the score to the student's record or return it directly
+    res.render('student/quizResult', { score, totalQuestions, percentageScore });
+  } catch (err) {
+    res.status(500).send('Server Error');
+  }
+};
+
 
 
 exports.viewAssignments = async (req, res) => {

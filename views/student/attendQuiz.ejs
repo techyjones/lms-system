@@ -1,0 +1,16 @@
+<!-- attendQuiz.ejs -->
+<form action="/student/submitQuiz/<%= quiz._id %>" method="POST">
+    <% quiz.questions.forEach(function(question, index) { %>
+      <div>
+        <label><%= question.questionText %></label>
+        <% question.options.forEach(function(option, i) { %>
+          <div>
+            <input type="radio" name="answers[<%= index %>]" value="<%= option %>" required>
+            <%= option %>
+          </div>
+        <% }); %>
+      </div>
+    <% }); %>
+    <button type="submit">Submit Quiz</button>
+  </form>
+  

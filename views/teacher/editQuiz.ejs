@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Quiz</title>
+</head>
+<body>
+    <h1>Edit Quiz: <%= quiz.title %></h1>
+    <form action="/teacher/quizzes/<%= quiz._id %>?_method=PUT" method="POST">
+        <label for="title">Quiz Title:</label>
+        <input type="text" id="title" name="title" value="<%= quiz.title %>" required>
+
+        <label for="courseId">Course:</label>
+        <select id="courseId" name="courseId" required>
+            <% courses.forEach(course => { %>
+                <option value="<%= course._id %>" <%= course._id.equals(quiz.courseId) ? 'selected' : '' %>><%= course.title %></option>
+            <% }) %>
+        </select>
+
+        <!-- Render questions and options here -->
+        <div id="questions-container">
+            <% quiz.questions.forEach((question, index) => { %>
+                <div>
+                    <label>Question <%= index + 1 %>:</label>
+                    <input type="text" name="questions[]" value="<%= question.questionText %>" required>
+                    <label>Options:</label>
+                    <% question.options.forEach(option => { %>
+                        <input type="text" name="options[<%= index %>][]" value="<%= option %>" required>
+                    <% }) %>
+                    <label>Correct Answer:</label>
+                    <input type="text" name="answers[]" value="<%= question.correctAnswer %>" required>
+                </div>
+            <% }) %>
+        </div>
+
+        <button type="button" onclick="addQuestion()">Add Another Question</button>
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <script>
+        let questionIndex = <%= quiz.questions.length %>;
+        function addQuestion() {
+            const container = document.getElementById('questions-container');
+            const newBlock = document.createElement('div');
+            newBlock.innerHTML = `
+                <label>Question ${questionIndex + 1}:</label>
+                <input type="text" name="questions[]" required>
+                <label>Options:</label>
+                <input type="text" name="options[${questionIndex}][]" required>
+                <input type="text" name="options[${questionIndex}][]" required>
+                <input type="text" name="options[${questionIndex}][]" required>
+                <input type="text" name="options[${questionIndex}][]" required>
+                <label>Correct Answer:</label>
+                <input type="text" name="answers[]" required>
+            `;
+            container.appendChild(newBlock);
+            questionIndex++;
+        }
+    </script>
+</body>
+</html>

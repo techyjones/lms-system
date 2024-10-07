@@ -90,6 +90,13 @@ router.get('/studentQuizzes', studentController.viewAvailableQuizzes);
  */
 router.post('/quizzes/:id/enroll', studentController.enrollInQuiz);
 
+// In routes/student.js
+
+router.get('/viewExistingQuizzes', studentController.viewExistingQuizzes); // View list of quizzes
+router.get('/attendQuiz/:quizId', studentController.renderQuizPage); // Attend a specific quiz
+router.post('/submitQuiz/:quizId', studentController.submitQuiz); // Submit quiz answers and view result
+
+
 
 
 /**

@@ -164,15 +164,27 @@ exports.updateQuizPost = async (req, res) => {
   }
 };
 
+// In your teacherController.js
 // Delete Quiz
 exports.deleteQuizPost = async (req, res) => {
   try {
-    await Quiz.findByIdAndDelete(req.params.id);
+    const quizId = req.params.id;
+    console.log(`Attempting to delete quiz with ID: ${quizId}`);
+
+    const deletedQuiz = await Quiz.findByIdAndDelete(quizId);
+    if (!deletedQuiz) {
+      console.error(`Quiz not found with ID: ${quizId}`);
+      return res.status(404).send('Quiz not found');
+    }
+
+    console.log(`Successfully deleted quiz: ${deletedQuiz.title}`);
     res.redirect('/teacher/viewQuizzes');
   } catch (err) {
+    console.error('Error while deleting quiz:', err);
     res.status(500).send('Server Error');
   }
 };
+
 
 
 // Render Create Assignment Form
@@ -545,6 +557,7 @@ exports.renderReportPage = async (req, res) => {
 exports.generateStudentReport = async (req, res) => {
   try {
     const studentId = req.query.studentId; 
+
     // Fetch student's assignment grades
     const assignmentGrades = await StudentSubmission.find({ studentId })
       .populate('assignmentId', 'title')
@@ -558,6 +571,12 @@ exports.generateStudentReport = async (req, res) => {
     // Fetch student's enrolled courses
     const student = await User.findById(studentId).populate('enrolledCourses', 'title');
 
+    // Check if the student exists
+    if (!student) {
+      console.error(`No student found with ID: ${studentId}`);
+      return res.status(404).send('Student not found');
+    }
+
     // Initialize jsPDF
     const doc = new jsPDF();
 
@@ -570,8 +589,9 @@ exports.generateStudentReport = async (req, res) => {
       doc.text("No assignments available.", 10, 30);
     } else {
       assignmentGrades.forEach((grade, index) => {
+        const assignmentTitle = grade.assignmentId ? grade.assignmentId.title : 'Unknown Assignment';
         doc.text(
-          `Assignment: ${grade.assignmentId.title}, Grade: ${grade.grade}`,
+          `Assignment: ${assignmentTitle}, Grade: ${grade.grade}`,
           10,
           30 + (index * 10)
         );
@@ -585,8 +605,9 @@ exports.generateStudentReport = async (req, res) => {
       doc.text("No quizzes available.", 10, quizStartY + 10);
     } else {
       quizGrades.forEach((grade, index) => {
+        const quizTitle = grade.quizId ? grade.quizId.title : 'Unknown Quiz';
         doc.text(
-          `Quiz: ${grade.quizId.title}, Grade: ${grade.grade}`,
+          `Quiz: ${quizTitle}, Grade: ${grade.grade}`,
           10,
           quizStartY + 10 + (index * 10)
         );
@@ -596,7 +617,7 @@ exports.generateStudentReport = async (req, res) => {
     // Enrolled Courses Section
     const courseStartY = quizStartY + 30 + quizGrades.length * 10;
     doc.text("Enrolled Courses:", 10, courseStartY);
-    if (student.enrolledCourses.length === 0) {
+    if (!student.enrolledCourses || student.enrolledCourses.length === 0) {
       doc.text("No enrolled courses available.", 10, courseStartY + 10);
     } else {
       student.enrolledCourses.forEach((course, index) => {

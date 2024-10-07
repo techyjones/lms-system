@@ -7,27 +7,27 @@
 </head>
 <body>
   <h1>Create a New Quiz</h1>
-  <form action="/teacher/viewQuizzes" method="post">
+  <form action="/teacher/quizzes" method="post"> <!-- Update action to the correct URL -->
     <label for="title">Quiz Title:</label>
     <input type="text" id="title" name="title" required>
 
     <label for="courseId">Course:</label>
-<select id="courseId" name="courseId" required>
-  <option value="" disabled selected>Select a course</option>
-  <% courses.forEach(course => { %>
-    <option value="<%= course._id %>"><%= course.title %></option>
-  <% }) %>
-</select>
+    <select id="courseId" name="courseId" required>
+      <option value="" disabled selected>Select a course</option>
+      <% courses.forEach(course => { %>
+        <option value="<%= course._id %>"><%= course.title %></option>
+      <% }) %>
+    </select>
 
     <div id="questions-container">
       <div>
         <label>Question 1:</label>
         <input type="text" name="questions[]" required>
         <label>Options:</label>
-        <input type="text" name="options[0][]" required>
-        <input type="text" name="options[0][]" required>
-        <input type="text" name="options[0][]" required>
-        <input type="text" name="options[0][]" required>
+        <input type="text" name="options[]" required>
+        <input type="text" name="options[]" required>
+        <input type="text" name="options[]" required>
+        <input type="text" name="options[]" required>
         <label>Correct Answer:</label>
         <input type="text" name="answers[]" required>
       </div>
@@ -46,10 +46,10 @@
         <label>Question ${questionIndex + 1}:</label>
         <input type="text" name="questions[]" required>
         <label>Options:</label>
-        <input type="text" name="options[${questionIndex}][]" required>
-        <input type="text" name="options[${questionIndex}][]" required>
-        <input type="text" name="options[${questionIndex}][]" required>
-        <input type="text" name="options[${questionIndex}][]" required>
+        <input type="text" name="options[]" required>
+        <input type="text" name="options[]" required>
+        <input type="text" name="options[]" required>
+        <input type="text" name="options[]" required>
         <label>Correct Answer:</label>
         <input type="text" name="answers[]" required>
       `;

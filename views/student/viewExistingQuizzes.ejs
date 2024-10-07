@@ -1,0 +1,11 @@
+<!-- views/student/viewAvailableQuizzes.ejs -->
+<h1>Available Quizzes</h1>
+<ul>
+  <% quizzes.forEach(quiz => { %>
+    <li>
+      <h3><%= quiz.title %></h3>
+      <p>Course: <%= quiz.courseId ? quiz.courseId.name : 'No course available' %></p>
+      <a href="/student/quiz/<%= quiz._id %>/attempt">Attempt Quiz</a>
+    </li>
+  <% }) %>
+</ul>
