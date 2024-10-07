@@ -61,7 +61,7 @@ router.get('/courses/enroll/:id', studentController.enrollCourse);
 
 /**
  * @swagger
- * /studentQuizzes:
+ * /student/studentQuizzes:
  *   get:
  *     summary: View available quizzes
  *     tags: [Students]
@@ -92,8 +92,149 @@ router.post('/quizzes/:id/enroll', studentController.enrollInQuiz);
 
 // In routes/student.js
 
+/**
+ * @swagger
+ * /student/viewExistingQuizzes:
+ *   get:
+ *     summary: View list of available quizzes for the student
+ *     description: Fetches and displays a list of all quizzes that the student can attend.
+ *     tags: 
+ *       - Student
+ *     responses:
+ *       200:
+ *         description: List of quizzes successfully retrieved.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: Unique quiz ID.
+ *                   title:
+ *                     type: string
+ *                     description: Title of the quiz.
+ *                   courseId:
+ *                     type: string
+ *                     description: ID of the course the quiz belongs to.
+ *                   questions:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         questionText:
+ *                           type: string
+ *                           description: The text of the quiz question.
+ *                         options:
+ *                           type: array
+ *                           items:
+ *                             type: string
+ *                           description: Available answer options.
+ *                         correctAnswer:
+ *                           type: string
+ *                           description: Correct answer for the quiz question.
+ *       500:
+ *         description: Error retrieving quizzes.
+ */
 router.get('/viewExistingQuizzes', studentController.viewExistingQuizzes); // View list of quizzes
+
+/**
+ * @swagger
+ * /student/attendQuiz/{quizId}:
+ *   get:
+ *     summary: Attend a specific quiz
+ *     description: Displays a quiz page for the student to answer questions of a specific quiz.
+ *     tags:
+ *       - Student
+ *     parameters:
+ *       - in: path
+ *         name: quizId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the quiz to be attended
+ *     responses:
+ *       200:
+ *         description: Quiz page successfully rendered.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                   description: Unique quiz ID.
+ *                 title:
+ *                   type: string
+ *                   description: Title of the quiz.
+ *                 questions:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       questionText:
+ *                         type: string
+ *                         description: The text of the quiz question.
+ *                       options:
+ *                         type: array
+ *                         items:
+ *                           type: string
+ *                         description: Available answer options.
+ *       404:
+ *         description: Quiz not found.
+ *       500:
+ *         description: Error rendering the quiz page.
+ */
 router.get('/attendQuiz/:quizId', studentController.renderQuizPage); // Attend a specific quiz
+
+/**
+ * @swagger
+ * /student/submitQuiz/{quizId}:
+ *   post:
+ *     summary: Submit quiz answers and view result
+ *     description: Submits the student's answers for a specific quiz and returns the result.
+ *     tags:
+ *       - Student
+ *     parameters:
+ *       - in: path
+ *         name: quizId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the quiz being submitted
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               answers:
+ *                 type: array
+ *                 description: Student's answers to the quiz
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Quiz answers successfully submitted, and result displayed.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 score:
+ *                   type: number
+ *                   description: The student's score for the quiz.
+ *                 correctAnswers:
+ *                   type: number
+ *                   description: Number of correct answers.
+ *       400:
+ *         description: Invalid quiz ID or missing answers.
+ *       500:
+ *         description: Error submitting the quiz or calculating results.
+ */
 router.post('/submitQuiz/:quizId', studentController.submitQuiz); // Submit quiz answers and view result
 
 
@@ -101,7 +242,7 @@ router.post('/submitQuiz/:quizId', studentController.submitQuiz); // Submit quiz
 
 /**
  * @swagger
- * /assignments:
+ * /student/assignments:
  *   get:
  *     summary: View all assignments
  *     tags: [Students]
@@ -113,7 +254,7 @@ router.get('/assignments', studentController.viewAssignments);
 
 /**
  * @swagger
- * /assignments/{assignmentId}/submit:
+ * /student/assignments/{assignmentId}/submit:
  *   post:
  *     summary: Submit an assignment
  *     tags: [Students]
@@ -215,7 +356,7 @@ router.get('/materials', studentController.viewMaterials);
 // Notification and Reply Routes
 /**
  * @swagger
- * /notifications:
+ * /student/notifications:
  *   get:
  *     summary: View student notifications
  *     tags: [Students]
@@ -227,7 +368,7 @@ router.get('/notifications', studentController.viewStudentNotifications);
 
 /**
  * @swagger
- * /respond/{notificationId}:
+ * /student/respond/{notificationId}:
  *   post:
  *     summary: Respond to a notification
  *     tags: [Students]

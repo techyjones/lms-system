@@ -538,7 +538,7 @@ router.get('/notifications', teacherController.viewNotifications);
 
 /**
  * @swagger
- * /notifications/send:
+ * /teacher/notifications/send:
  *   post:
  *     summary: Send a notification to a student
  *     tags:
