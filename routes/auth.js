@@ -3,6 +3,12 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const { authenticateToken } = require('../middleware/authMiddleware');
+
+// Example of protecting a route
+router.get('/dashboard', authenticateToken, (req, res) => {
+    res.send('Welcome to the Dashboard');
+});
 
 
 

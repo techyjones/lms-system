@@ -4,6 +4,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const twilioService = require('../services/twilioService');
 
+
 exports.registerGet = (req, res) => {
   res.render('register');
 };

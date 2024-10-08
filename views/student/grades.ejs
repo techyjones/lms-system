@@ -26,9 +26,15 @@
   <% } else { %>
     <ul>
       <% quizGrades.forEach(quiz => { %>
-        <li>
-          Quiz: <%= quiz.quizId.title %> - Grade: <%= quiz.grade !== null ? quiz.grade : 'N/A' %>
-        </li>
+        <% if (quiz.quizId) { %>
+          <li>
+            Quiz: <%= quiz.quizId.title %> - Grade: <%= quiz.grade !== null ? quiz.grade : 'N/A' %>
+          </li>
+        <% } else { %>
+          <li>
+            Quiz: (Deleted) - Grade: <%= quiz.grade !== null ? quiz.grade : 'N/A' %>
+          </li>
+        <% } %>
       <% }) %>
     </ul>
   <% } %>

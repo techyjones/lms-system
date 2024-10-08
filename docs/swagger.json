@@ -538,7 +538,7 @@
         }
       }
     },
-    "/studentQuizzes": {
+    "/student/studentQuizzes": {
       "get": {
         "summary": "View available quizzes",
         "tags": [
@@ -575,36 +575,168 @@
         }
       }
     },
-    "/assignments": {
+    "/student/viewExistingQuizzes": {
       "get": {
-        "summary": "View all assignments",
+        "summary": "View list of available quizzes for the student",
+        "description": "Fetches and displays a list of all quizzes that the student can attend.",
         "tags": [
-          "Teacher"
+          "Student"
         ],
         "responses": {
           "200": {
-            "description": "Successful response with a list of assignments"
+            "description": "List of quizzes successfully retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "description": "Unique quiz ID."
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Title of the quiz."
+                      },
+                      "courseId": {
+                        "type": "string",
+                        "description": "ID of the course the quiz belongs to."
+                      },
+                      "questions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "questionText": {
+                              "type": "string",
+                              "description": "The text of the quiz question."
+                            },
+                            "options": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Available answer options."
+                            },
+                            "correctAnswer": {
+                              "type": "string",
+                              "description": "Correct answer for the quiz question."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error retrieving quizzes."
           }
         }
-      },
-      "post": {
-        "summary": "Create a new assignment",
+      }
+    },
+    "/student/attendQuiz/{quizId}": {
+      "get": {
+        "summary": "Attend a specific quiz",
+        "description": "Displays a quiz page for the student to answer questions of a specific quiz.",
         "tags": [
-          "Teacher"
+          "Student"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quizId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of the quiz to be attended"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz page successfully rendered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "description": "Unique quiz ID."
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "Title of the quiz."
+                    },
+                    "questions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "questionText": {
+                            "type": "string",
+                            "description": "The text of the quiz question."
+                          },
+                          "options": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Available answer options."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Quiz not found."
+          },
+          "500": {
+            "description": "Error rendering the quiz page."
+          }
+        }
+      }
+    },
+    "/student/submitQuiz/{quizId}": {
+      "post": {
+        "summary": "Submit quiz answers and view result",
+        "description": "Submits the student's answers for a specific quiz and returns the result.",
+        "tags": [
+          "Student"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "quizId",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "ID of the quiz being submitted"
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  },
-                  "description": {
-                    "type": "string"
+                  "answers": {
+                    "type": "array",
+                    "description": "Student's answers to the quiz",
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -612,16 +744,49 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Assignment created successfully"
+          "200": {
+            "description": "Quiz answers successfully submitted, and result displayed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "score": {
+                      "type": "number",
+                      "description": "The student's score for the quiz."
+                    },
+                    "correctAnswers": {
+                      "type": "number",
+                      "description": "Number of correct answers."
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad request"
+            "description": "Invalid quiz ID or missing answers."
+          },
+          "500": {
+            "description": "Error submitting the quiz or calculating results."
           }
         }
       }
     },
-    "/assignments/{assignmentId}/submit": {
+    "/student/assignments": {
+      "get": {
+        "summary": "View all assignments",
+        "tags": [
+          "Students"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of available assignments"
+          }
+        }
+      }
+    },
+    "/student/assignments/{assignmentId}/submit": {
       "post": {
         "summary": "Submit an assignment",
         "tags": [
@@ -742,20 +907,20 @@
         }
       }
     },
-    "/notifications": {
+    "/student/notifications": {
       "get": {
-        "summary": "View all notifications sent to students",
+        "summary": "View student notifications",
         "tags": [
-          "Teacher"
+          "Students"
         ],
         "responses": {
           "200": {
-            "description": "Successful response with a list of notifications"
+            "description": "List of notifications for the student"
           }
         }
       }
     },
-    "/respond/{notificationId}": {
+    "/student/respond/{notificationId}": {
       "post": {
         "summary": "Respond to a notification",
         "tags": [
@@ -1112,7 +1277,7 @@
         }
       }
     },
-    "/assignments/{id}": {
+    "/teacher/assignments/{id}": {
       "get": {
         "summary": "View details of a specific assignment",
         "tags": [
@@ -1139,7 +1304,53 @@
         }
       }
     },
-    "/viewaSubmissions": {
+    "/teacher/assignments": {
+      "post": {
+        "summary": "Create a new assignment",
+        "tags": [
+          "Teacher"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Assignment created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      },
+      "get": {
+        "summary": "View all assignments",
+        "tags": [
+          "Teacher"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with a list of assignments"
+          }
+        }
+      }
+    },
+    "/teacher/viewaSubmissions": {
       "get": {
         "summary": "View all student submissions",
         "tags": [
@@ -1152,7 +1363,7 @@
         }
       }
     },
-    "/gradeSubmission/{submissionId}": {
+    "/teacher/gradeSubmission/{submissionId}": {
       "post": {
         "summary": "Grade a specific assignment submission",
         "tags": [
@@ -1195,7 +1406,7 @@
         }
       }
     },
-    "/scoreboard": {
+    "/teacher/scoreboard": {
       "get": {
         "summary": "View the scoreboard for assignments",
         "tags": [
@@ -1208,7 +1419,7 @@
         }
       }
     },
-    "/enrolledStudents": {
+    "/teacher/enrolledStudents": {
       "get": {
         "summary": "View students enrolled for quizzes",
         "tags": [
@@ -1221,7 +1432,7 @@
         }
       }
     },
-    "/gradeQuiz/{quizId}/{studentId}": {
+    "/teacher/gradeQuiz/{quizId}/{studentId}": {
       "post": {
         "summary": "Grade a specific quiz for a student",
         "tags": [
@@ -1275,13 +1486,13 @@
     },
     "/teacher/assignments/{id}/grade": {
       "post": {
-        "summary": "Grade an assignment",
+        "summary": "Grade a specific assignment",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "The ID of the assignment to grade",
+            "description": "The assignment ID",
             "schema": {
               "type": "string"
             }
@@ -1295,7 +1506,8 @@
                 "type": "object",
                 "properties": {
                   "grade": {
-                    "type": "number"
+                    "type": "integer",
+                    "description": "The grade to assign to the submission"
                   }
                 }
               }
@@ -1306,10 +1518,16 @@
           "200": {
             "description": "Assignment graded successfully"
           },
+          "400": {
+            "description": "Invalid assignment ID or grade"
+          },
           "404": {
             "description": "Assignment not found"
           }
-        }
+        },
+        "tags": [
+          "Teacher"
+        ]
       }
     },
     "/teacher/upload": {
@@ -1356,7 +1574,20 @@
         }
       }
     },
-    "/notifications/send": {
+    "/teacher/notifications": {
+      "get": {
+        "summary": "View all notifications sent to students",
+        "tags": [
+          "Teacher"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with a list of notifications"
+          }
+        }
+      }
+    },
+    "/teacher/notifications/send": {
       "post": {
         "summary": "Send a notification to a student",
         "tags": [
@@ -1392,7 +1623,7 @@
         }
       }
     },
-    "/viewreplies": {
+    "/teacher/viewreplies": {
       "get": {
         "summary": "View replies from students to the notifications",
         "tags": [
@@ -1405,7 +1636,7 @@
         }
       }
     },
-    "/createAssignment": {
+    "/teacher/createAssignment": {
       "get": {
         "summary": "Render the form to create a new assignment",
         "tags": [
@@ -1418,7 +1649,7 @@
         }
       }
     },
-    "/assignments/{assignmentId}/submissions": {
+    "/teacher/assignments/{assignmentId}/submissions": {
       "get": {
         "summary": "View student submissions for a specific assignment",
         "tags": [
@@ -1445,50 +1676,7 @@
         }
       }
     },
-    "/assignments/{id}/grade": {
-      "post": {
-        "summary": "Grade a specific assignment",
-        "tags": [
-          "Teacher"
-        ],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "The assignment ID"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "grade": {
-                    "type": "integer",
-                    "description": "The grade to assign to the submission"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Assignment graded successfully"
-          },
-          "400": {
-            "description": "Invalid assignment ID or grade"
-          }
-        }
-      }
-    },
-    "/report": {
+    "/teacher/report": {
       "get": {
         "summary": "Display the report generation page",
         "tags": [
@@ -1501,7 +1689,7 @@
         }
       }
     },
-    "/report/generate": {
+    "/teacher/report/generate": {
       "get": {
         "summary": "Generate a PDF report for a specific student",
         "tags": [
