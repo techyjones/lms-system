@@ -1,7 +1,7 @@
 // config/dbConfig.js
 const mongoose = require('mongoose');
 
-const dbURI = process.env.MONGODB_URI || 'mongodb://mongo:pqsNbllSfwSWIIzWPyBQzEmGKnwCymKa@mongodb.railway.internal:27017/shanai-lms';
+const dbURI = process.env.MONGODB_URI;
 const connectDB = async () => {
   try {
     await mongoose.connect(dbURI, {
